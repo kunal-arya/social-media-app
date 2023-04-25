@@ -17,7 +17,6 @@ import {
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 import "./index.css";
-import persistReducer from "redux-persist/es/persistReducer";
 
 // Configuration for Redux Persist
 const persistConfig = {
