@@ -1,0 +1,11 @@
+{
+  // This is a configuration file for the JavaScript language server in VSCode
+
+  // Specifies options for the JavaScript language server
+  "compilerOptions": {
+    // Sets the base URL for module resolution to "src" directory
+    "baseUrl": "src"
+  },
+  // Specifies which files or directories should be included for analysis
+  "include": ["src"]
+}
