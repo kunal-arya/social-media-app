@@ -24,7 +24,6 @@ const __filename = fileURLToPath(import.meta.url);
 
 // Get the directory name of the current module's file
 const __dirname = path.dirname(__filename);
-console.log(__filename, __dirname);
 
 // Load environment variables from a .env file
 dotenv.config();
@@ -40,8 +39,22 @@ app.use(helmet());
 // Set cross-origin resource policy to "cross-origin" using the Helmet middleware
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
-// Enable logging of HTTP requests using the Morgan middleware
-app.use(morgan("common"));
+// Create a custom format function that includes the timezone offset
+morgan.token("customdate", (req, res, tz) => {
+  return new Date().toLocaleString("en-US", { timeZone: tz });
+});
+
+// Set the timezone for logging
+const timeZone = "Asia/Kolkata"; // Use the valid timezone identifier for IST
+
+// Configure Morgan middleware with custom format
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms [:customdate[" +
+      timeZone +
+      "]]"
+  )
+);
 
 // Parse incoming JSON request bodies with a limit of 30MB and extended option set to true
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
