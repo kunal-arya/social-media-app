@@ -65,8 +65,7 @@ export const addRemoveFriend = async (req, res) => {
       user.friends = user.friends.filter((id) => id !== friendId);
 
       // Also remove user's id from friend's friends
-      friend.friends = friend.friends.filter((id_friends) => id_friends !== id);
-      array;
+      friend.friends = friend.friends.filter((id) => id !== id);
     } else {
       // If friendId is not included in user's friends array
 
