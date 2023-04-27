@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "../../state/index";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/flexBetween";
+import { BASE_URL } from "../../utils/baseUrl";
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -69,13 +70,10 @@ const Form = () => {
     formData.append("picturePath", values.picture.name);
 
     // send a POST request to the server to save the user data
-    const savedUserResponse = await fetch(
-      "http://localhost:3001/auth/register",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const savedUserResponse = await fetch(`${BASE_URL}/auth/register`, {
+      method: "POST",
+      body: formData,
+    });
 
     // parse the response from the server as JSON
     const savedUser = await savedUserResponse.json();
@@ -94,7 +92,7 @@ const Form = () => {
   // 2. "onSubmitProps": a set of formik form submission props
   const login = async (values, onSubmitProps) => {
     // Make a POST request to the "/auth/login" endpoint of our server
-    const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
+    const loggedInResponse = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
