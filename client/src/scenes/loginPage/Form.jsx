@@ -55,14 +55,20 @@ const Form = () => {
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
 
+  // This function is used to handle registration form submission
   const register = async (values, onSubmitProps) => {
-    // this allows us to send form info with image
+    // create a new FormData object to send form data along with the image
     const formData = new FormData();
+
+    // append each value in the form to the formData object
     for (let value in values) {
       formData.append(value, values[value]);
     }
+
+    // append the file name of the image to the formData object
     formData.append("picturePath", values.picture.name);
 
+    // send a POST request to the server to save the user data
     const savedUserResponse = await fetch(
       "http://localhost:3001/auth/register",
       {
@@ -70,22 +76,39 @@ const Form = () => {
         body: formData,
       }
     );
+
+    // parse the response from the server as JSON
     const savedUser = await savedUserResponse.json();
+
+    // reset the form after successful submission
     onSubmitProps.resetForm();
 
+    // if user is saved successfully, set pageType to "login" to redirect to login page
     if (savedUser) {
       setPageType("login");
     }
   };
 
+  // Define a function called "login" that takes in two parameters:
+  // 1. "values": an object containing login credentials (username and password)
+  // 2. "onSubmitProps": a set of formik form submission props
   const login = async (values, onSubmitProps) => {
+    // Make a POST request to the "/auth/login" endpoint of our server
     const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
+
+    // Parse the response from the server as JSON
     const loggedIn = await loggedInResponse.json();
+
+    // Reset the form using formik's "resetForm" function
     onSubmitProps.resetForm();
+
+    // If we successfully logged in (received a valid response from the server),
+    // dispatch an action to update the Redux store with the logged-in user's information
+    // and navigate to the "/home" page using the "navigate" function from the "@reach/router" library
     if (loggedIn) {
       dispatch(
         setLogin({
