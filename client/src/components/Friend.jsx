@@ -21,6 +21,9 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
   const isFriend = friends.find((friend) => friend._id === friendId);
 
+  // when we post something , we don't want to show add friend to our own post
+  const isUserFriendSame = _id === friendId;
+
   const patchFriend = async () => {
     const response = await fetch(`${BASE_URL}/users/${_id}/${friendId}`, {
       method: "PATCH",
@@ -49,7 +52,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
             fontWeight="500"
             sx={{
               "&:hover": {
-                color: palette.primary.light,
+                color: palette.neutral.medium,
                 cursor: "pointer",
               },
             }}
@@ -61,16 +64,18 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      <IconButton
-        onClick={() => patchFriend()}
-        sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
-      >
-        {isFriend ? (
-          <PersonRemoveOutlined sx={{ color: primaryDark }} />
-        ) : (
-          <PersonAddOutlined sx={{ color: primaryDark }} />
-        )}
-      </IconButton>
+      {!isUserFriendSame && (
+        <IconButton
+          onClick={() => patchFriend()}
+          sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+        >
+          {isFriend ? (
+            <PersonRemoveOutlined sx={{ color: primaryDark }} />
+          ) : (
+            <PersonAddOutlined sx={{ color: primaryDark }} />
+          )}
+        </IconButton>
+      )}
     </FlexBetween>
   );
 };
