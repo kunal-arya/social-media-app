@@ -99,3 +99,26 @@ export const likePost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+/* DELETE */
+export const deletePost = async (req, res) => {
+  try {
+    // getting post id
+    const { postId, userId } = req.params;
+
+    const post = await Post.findById(postId);
+
+    if (userId !== post.userId) {
+      throw new Error("Access Denied, you can't delete someone's else post");
+    }
+
+    await Post.deleteOne(post);
+
+    const posts = await Post.find().sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (err) {
+    // Handling any errors that occur and sending a JSON response with a 404 status code
+    res.status(404).json({ message: err.message });
+  }
+};

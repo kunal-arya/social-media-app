@@ -1,18 +1,29 @@
 import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
-import { Box, IconButton, Typography, useTheme } from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { setFriends } from "../state/index";
+import { useMatch, useNavigate } from "react-router-dom";
+import { setFriends, setPosts } from "../state/index";
 import FlexBetween from "./flexBetween";
 import UserImage from "./UserImage";
 import { BASE_URL } from "../utils/baseUrl";
+import { useState } from "react";
 
-const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
+const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
+  const [isDeleteMenuOpen, setDeleteMenuOpen] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { _id, friends } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-
+  const isNonMobileScreen = useMediaQuery("(min-width: 1050px)");
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
@@ -34,6 +45,25 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     });
     const data = await response.json();
     dispatch(setFriends({ friends: data }));
+  };
+
+  const deletePost = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/posts/${postId}/${_id}/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+      dispatch(setPosts({ posts: result }));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -64,7 +94,28 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      {!isUserFriendSame && (
+      {isUserFriendSame ? (
+        <Box>
+          <IconButton onClick={(e) => setDeleteMenuOpen(e.currentTarget)}>
+            {isNonMobileScreen ? (
+              <MoreHorizIcon fontSize="large" />
+            ) : (
+              <MoreHorizIcon fontSize="medium" />
+            )}
+          </IconButton>
+          <Menu
+            id="delete-menu"
+            anchorEl={isDeleteMenuOpen}
+            open={Boolean(isDeleteMenuOpen)}
+            onClose={() => setDeleteMenuOpen(null)}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem onClick={() => deletePost()}>Delete Post</MenuItem>
+          </Menu>
+        </Box>
+      ) : (
         <IconButton
           onClick={() => patchFriend()}
           sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
