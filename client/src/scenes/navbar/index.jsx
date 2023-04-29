@@ -64,9 +64,17 @@ const Navbar = () => {
             borderRadius="9px"
             gap="3rem"
             padding="0.1rem 1.5rem"
+            sx={{
+              position: "relative",
+            }}
           >
             <InputBase placeholder="Search..." />
-            <IconButton>
+            <IconButton
+              sx={{
+                position: "absolute",
+                right: "10px",
+              }}
+            >
               <Search />
             </IconButton>
           </FlexBetween>

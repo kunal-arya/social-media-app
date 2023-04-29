@@ -34,7 +34,7 @@ export const register = async (req, res) => {
       location,
       occupation,
       viewedProfile: Math.floor(Math.random() * 500),
-      impressions: Math.floor(Math.random() * 1000),
+      impressions: 500 + Math.floor(Math.random() * 1000),
     });
 
     // Saving the new user object to the database

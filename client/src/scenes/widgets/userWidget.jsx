@@ -18,6 +18,7 @@ const UserWidget = ({ userId, picturePath }) => {
   const { palette } = useTheme();
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
+  const friends = useSelector((state) => state.user.friends);
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
@@ -46,17 +47,12 @@ const UserWidget = ({ userId, picturePath }) => {
     occupation,
     viewedProfile,
     impressions,
-    friends,
   } = user;
 
   return (
     <WidgetWrapper>
       {/* First ROW */}
-      <FlexBetween
-        gap="0.5rem"
-        pb="1.1rem"
-        onClick={() => navigate(`/profile/${userId}`)}
-      >
+      <FlexBetween gap="0.5rem" pb="1.1rem">
         <FlexBetween gap="1rem">
           <UserImage image={picturePath} />
           <Box>
@@ -70,13 +66,26 @@ const UserWidget = ({ userId, picturePath }) => {
                   cursor: "pointer",
                 },
               }}
+              onClick={() => navigate(`/profile/${userId}`)}
             >
               {firstName} {lastName}
             </Typography>
-            <Typography color={medium}>{friends.length} friends</Typography>
+            <Typography color={medium}>
+              {friends.length} {friends.length < 2 ? "friend" : "friends"}
+            </Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined />
+        <Box
+          onClick={() => navigate(`/profile/${userId}`)}
+          sx={{
+            "&:hover": {
+              color: palette.neutral.medium,
+              cursor: "pointer",
+            },
+          }}
+        >
+          <ManageAccountsOutlined />
+        </Box>
       </FlexBetween>
 
       <Divider />
