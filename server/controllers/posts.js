@@ -122,3 +122,36 @@ export const deletePost = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+/* POST COMMENT */
+
+export const postComment = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const { userId, comment } = req.body;
+
+    const user = await User.findById(userId);
+
+    const post = await Post.findById(postId);
+
+    const { firstName, lastName, picturePath } = user;
+
+    post.comments.push({
+      userId,
+      firstName,
+      lastName,
+      userPicturePath: picturePath,
+      comment,
+    });
+
+    await post.save();
+
+    const posts = await Post.find().sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (err) {
+    // Handling any errors that occur and sending a JSON response with a 404 status code
+    res.status(404).json({ message: err.message });
+  }
+};

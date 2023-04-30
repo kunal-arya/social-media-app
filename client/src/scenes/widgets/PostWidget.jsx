@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "../../state/index";
 import { BASE_URL } from "../../utils/baseUrl";
+import PostComment from "../../components/postComment";
+import Comment from "../../components/comment";
 
 const PostWidget = ({
   postId,
@@ -93,17 +95,23 @@ const PostWidget = ({
           <ShareOutlined />
         </IconButton>
       </FlexBetween>
-      {isComments && (
+      {!isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
-            </Box>
-          ))}
-          <Divider />
+          <PostComment postId={postId} />
+          {comments.map(
+            ({ firstName, lastName, userPicturePath, comment, userId }, i) => (
+              <Box key={`${firstName} ${i}`}>
+                <Divider />
+                <Comment
+                  firstName={firstName}
+                  lastName={lastName}
+                  userPicturePath={userPicturePath}
+                  comment={comment}
+                  userId={userId}
+                />
+              </Box>
+            )
+          )}
         </Box>
       )}
     </WidgetWrapper>
