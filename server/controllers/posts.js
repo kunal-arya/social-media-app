@@ -155,3 +155,33 @@ export const postComment = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const { userId, commentId } = req.body;
+    let post = await Post.findById(postId);
+
+    const myComment = post.comments.filter(
+      (currComment) => currComment._id.toString() === commentId
+    );
+
+    console.log(userId, commentId, myComment[0]);
+    if (userId !== myComment[0].userId) {
+      throw new Error("Access Denied, you can't delete someone's else comment");
+    }
+
+    post.comments = post.comments.filter(
+      (currComment) => currComment._id.toString() !== commentId
+    );
+    await post.save();
+
+    const posts = await Post.find().sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (err) {
+    // Handling any errors that occur and sending a JSON response with a 404 status code
+    res.status(404).json({ message: err.message });
+  }
+};

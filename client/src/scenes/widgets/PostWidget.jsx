@@ -98,18 +98,22 @@ const PostWidget = ({
       {!isComments && (
         <Box mt="0.5rem">
           <PostComment postId={postId} />
+          <Divider />
           {comments.map(
-            ({ firstName, lastName, userPicturePath, comment, userId }, i) => (
-              <Box key={`${firstName} ${i}`}>
-                <Divider />
-                <Comment
-                  firstName={firstName}
-                  lastName={lastName}
-                  userPicturePath={userPicturePath}
-                  comment={comment}
-                  userId={userId}
-                />
-              </Box>
+            (
+              { firstName, lastName, userPicturePath, comment, userId, _id },
+              index
+            ) => (
+              <Comment
+                key={`${firstName} ${index}`}
+                firstName={firstName}
+                lastName={lastName}
+                userPicturePath={userPicturePath}
+                comment={comment}
+                userId={userId}
+                postId={postId}
+                commentId={_id}
+              />
             )
           )}
         </Box>

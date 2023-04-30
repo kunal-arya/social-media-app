@@ -11,18 +11,51 @@ import { useTheme } from "@emotion/react";
 import FlexBetween from "./flexBetween";
 import { useNavigate } from "react-router-dom";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
+import { BASE_URL } from "../utils/baseUrl";
+import { setPosts } from "../state";
 
-const Comment = ({ firstName, lastName, userPicturePath, comment, userId }) => {
+const Comment = ({
+  firstName,
+  lastName,
+  userPicturePath,
+  comment,
+  userId,
+  postId,
+  commentId,
+}) => {
   const [isDeleteMenuOpen, setDeleteMenuOpen] = useState(null);
   const { palette } = useTheme();
   const neutralLight = palette.neutral.light;
   const primaryDark = palette.primary.dark;
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
+  const dispatch = useDispatch();
 
-  console.log(userPicturePath);
+  const deleteComment = async () => {
+    try {
+      const commentObj = {
+        commentId: commentId,
+        userId: loggedInUserId,
+      };
+
+      const response = await fetch(`${BASE_URL}/posts/${postId}/comment`, {
+        method: "delete",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(commentObj),
+      });
+
+      const posts = await response.json();
+      dispatch(setPosts({ posts }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <FlexBetween m="1rem 0">
       <UserImage image={userPicturePath} size="35px" />
@@ -56,7 +89,12 @@ const Comment = ({ firstName, lastName, userPicturePath, comment, userId }) => {
         </Box>
         {loggedInUserId === userId && (
           <>
-            <IconButton onClick={(e) => setDeleteMenuOpen(e.currentTarget)}>
+            <IconButton
+              onClick={(e) => setDeleteMenuOpen(e.currentTarget)}
+              sx={{
+                marginRight: "0.5rem",
+              }}
+            >
               <MoreHorizIcon />
             </IconButton>
             <Menu
@@ -68,9 +106,7 @@ const Comment = ({ firstName, lastName, userPicturePath, comment, userId }) => {
                 "aria-labelledby": "basic-button",
               }}
             >
-              <MenuItem onClick={() => deleteComment()}>
-                Delete Comment
-              </MenuItem>
+              <MenuItem onClick={deleteComment}>Delete Comment</MenuItem>
             </Menu>
           </>
         )}
