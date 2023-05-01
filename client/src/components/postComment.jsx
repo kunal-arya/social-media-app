@@ -6,7 +6,7 @@ import { IconButton, InputBase } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { BASE_URL } from "../utils/baseUrl";
-import { setPosts } from "../state";
+import { setPost } from "../state";
 
 function PostComment({ postId }) {
   const [comment, setComment] = useState("");
@@ -24,7 +24,7 @@ function PostComment({ postId }) {
       };
 
       const response = await fetch(`${BASE_URL}/posts/${postId}/comment`, {
-        method: "post",
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json", // set content type to JSON
@@ -33,8 +33,8 @@ function PostComment({ postId }) {
         body: JSON.stringify(commentObj),
       });
 
-      const posts = await response.json();
-      dispatch(setPosts({ posts }));
+      const post = await response.json();
+      dispatch(setPost({ post }));
       setComment("");
     } catch (err) {
       console.err(err.message);

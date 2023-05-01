@@ -147,9 +147,7 @@ export const postComment = async (req, res) => {
 
     await post.save();
 
-    const posts = await Post.find().sort({ createdAt: -1 });
-
-    res.status(200).json(posts);
+    res.status(200).json(post);
   } catch (err) {
     // Handling any errors that occur and sending a JSON response with a 404 status code
     res.status(404).json({ message: err.message });
@@ -175,11 +173,10 @@ export const deleteComment = async (req, res) => {
     post.comments = post.comments.filter(
       (currComment) => currComment._id.toString() !== commentId
     );
+
     await post.save();
 
-    const posts = await Post.find().sort({ createdAt: -1 });
-
-    res.status(200).json(posts);
+    res.status(200).json(post);
   } catch (err) {
     // Handling any errors that occur and sending a JSON response with a 404 status code
     res.status(404).json({ message: err.message });

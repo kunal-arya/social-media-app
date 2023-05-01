@@ -14,7 +14,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { BASE_URL } from "../utils/baseUrl";
-import { setPosts } from "../state";
+import { setPost } from "../state";
 
 const Comment = ({
   firstName,
@@ -50,8 +50,8 @@ const Comment = ({
         body: JSON.stringify(commentObj),
       });
 
-      const posts = await response.json();
-      dispatch(setPosts({ posts }));
+      const post = await response.json();
+      dispatch(setPost({ post }));
     } catch (err) {
       console.error(err);
     }
