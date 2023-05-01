@@ -78,7 +78,7 @@ const UserWidget = ({ userId, picturePath, isProfilePage = false }) => {
               </Box>
             </FlexBetween>
             <Box
-              onClick={() => navigate(`/profile/${userId}`)}
+              onClick={() => navigate(`/profile/edit/${userId}`)}
               sx={{
                 "&:hover": {
                   color: palette.neutral.medium,

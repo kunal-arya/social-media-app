@@ -1,25 +1,29 @@
 import { useTheme } from "@emotion/react";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box, Button, Typography } from "@mui/material";
-import { BASE_URL } from "../utils/baseUrl";
-import FlexBetween from "./flexBetween";
+import { Box, Button, IconButton, Typography } from "@mui/material";
+import { BASE_URL } from "../../utils/baseUrl";
+import FlexBetween from "../../components/flexBetween";
+import { useNavigate } from "react-router-dom";
+import { PhotoCamera } from "@mui/icons-material";
+import UploadButton from "../../components/UploadButton";
 
 const ProfileDashboard = ({ user }) => {
   const { palette } = useTheme();
   const backgroundColor = palette.background.alt;
   const dark = palette.neutral.dark;
+  const navigate = useNavigate();
 
   return (
     <Box
       maxWidth="60rem"
-      height="35rem"
+      height="30rem"
       margin="auto"
       backgroundColor={backgroundColor}
       borderRadius={"0 0 10px 10px"}
       sx={{
         display: "grid",
         gridTemplateColumns: "170px 1fr",
-        gridTemplateRows: "65% 35%",
+        gridTemplateRows: "60% 40%",
         gridTemplateAreas: `
         "cover cover"
         "picture info"
@@ -40,21 +44,24 @@ const ProfileDashboard = ({ user }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          position: "relative",
         }}
       >
-        <Box
-          width="150px"
-          height="150px"
-          sx={{ postion: "absolute", right: "10px" }}
-        >
+        <Box width="150px" height="150px">
           <img
-            style={{ objectFit: "cover", borderRadius: "50%" }}
+            style={{
+              objectFit: "cover",
+              borderRadius: "50%",
+              borderColor: `${backgroundColor}`,
+              boxShadow: "0px 0px 10px rgba(0,0,0,0.4)",
+            }}
             width="100%"
             height="100%"
-            border={`5px solid ${dark}`}
+            border="5px solid"
             src={`${BASE_URL}/assets/${user.picturePath}`}
           />
         </Box>
+        <UploadButton isIconButton={true} user={user} />
       </Box>
       <Box
         sx={{
@@ -70,19 +77,12 @@ const ProfileDashboard = ({ user }) => {
         <Typography variant="h2" fontWeight="bold" mb="1rem">
           {user.firstName} {user.lastName}
         </Typography>
-        <Button variant="outlined" sx={{ borderColor: `${dark}` }}>
-          <FlexBetween
-            gap="0.25rem"
-            variant="h4"
-            color={dark}
-            fontWeight="500"
-            sx={{
-              "&:active": {
-                color: palette.neutral.medium,
-                cursor: "pointer",
-              },
-            }}
-          >
+        <Button
+          variant="outlined"
+          sx={{ borderColor: `${dark}`, color: `${dark}` }}
+          onClick={() => navigate(`/profile/edit/${user.userId}`)}
+        >
+          <FlexBetween gap="0.25rem">
             <EditIcon />
             <Typography sx={{ textTransform: "capitalize" }}>
               Edit Profile

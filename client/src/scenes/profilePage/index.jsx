@@ -8,7 +8,7 @@ import MyPostWidget from "../widgets/MyPostWidget";
 import PostsWidget from "../widgets/PostsWidget";
 import UserWidget from "../widgets/UserWidget";
 import { BASE_URL } from "../../utils/baseUrl";
-import ProfileDashboard from "../../components/ProfileDashboard";
+import ProfileDashboard from "../widgets/ProfileDashboardWidget";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);

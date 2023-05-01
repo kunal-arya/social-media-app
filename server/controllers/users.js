@@ -1,3 +1,4 @@
+import Post from "../models/Post.js";
 import User from "../models/User.js";
 
 /* READ */
@@ -100,6 +101,37 @@ export const addRemoveFriend = async (req, res) => {
 
     // Sending the formatted friends' information as a JSON response with a 200 status code
     res.status(200).json(formattedFriends);
+  } catch (err) {
+    // Handling any errors that occur and sending a JSON response with a 404 status code
+    res.status(404).json({ message: err.message });
+  }
+};
+
+/* UPDATE PROFILE PIC */
+
+export const changeProfilePicture = async (req, res) => {
+  try {
+    const { id, newPicturePath } = req.params;
+
+    const user = await User.findById(id);
+    let posts = await Post.find();
+
+    const updatedPosts = await Promise.all(
+      posts.map(async (post) => {
+        if (post.userId === id) {
+          post.userPicturePath = newPicturePath;
+          await post.save(); // save individual post
+          return post;
+        }
+        return post;
+      })
+    );
+
+    user.picturePath = newPicturePath;
+
+    await user.save();
+
+    res.status(200).json({ user, posts: updatedPosts });
   } catch (err) {
     // Handling any errors that occur and sending a JSON response with a 404 status code
     res.status(404).json({ message: err.message });
