@@ -8,6 +8,7 @@ import MyPostWidget from "../widgets/MyPostWidget";
 import PostsWidget from "../widgets/PostsWidget";
 import UserWidget from "../widgets/UserWidget";
 import { BASE_URL } from "../../utils/baseUrl";
+import ProfileDashboard from "../../components/ProfileDashboard";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -34,6 +35,7 @@ const ProfilePage = () => {
   return (
     <Box>
       <Navbar />
+      <ProfileDashboard user={user} />
       <Box
         width="100%"
         padding="2rem 6%"
@@ -42,16 +44,15 @@ const ProfilePage = () => {
         justifyContent="center"
       >
         <Box flexBasis={isNonMobileScreen ? "26%" : undefined}>
-          <UserWidget userId={userId} picturePath={user.picturePath} />
+          <UserWidget
+            userId={userId}
+            picturePath={user.picturePath}
+            isProfilePage={true}
+          />
           <Box m="2rem 0" />
           <FriendListWidget userId={userId} />
         </Box>
-        <Box
-          flexBasis={isNonMobileScreen ? "42%" : undefined}
-          mt={isNonMobileScreen ? undefined : "2rem"}
-        >
-          <MyPostWidget picturePath={user.picturePath} />
-          <Box m="2rem 0" />
+        <Box flexBasis={isNonMobileScreen ? "42%" : undefined} m="0">
           <PostsWidget userId={userId} isProfile />
         </Box>
       </Box>

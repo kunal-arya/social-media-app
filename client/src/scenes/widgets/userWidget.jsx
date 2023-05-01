@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../utils/baseUrl";
 
-const UserWidget = ({ userId, picturePath }) => {
+const UserWidget = ({ userId, picturePath, isProfilePage = false }) => {
   const [user, setUser] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
@@ -52,43 +52,46 @@ const UserWidget = ({ userId, picturePath }) => {
   return (
     <WidgetWrapper>
       {/* First ROW */}
-      <FlexBetween gap="0.5rem" pb="1.1rem">
-        <FlexBetween gap="1rem">
-          <UserImage image={picturePath} />
-          <Box>
-            <Typography
-              variant="h4"
-              color={dark}
-              fontWeight="500"
+      {!isProfilePage && (
+        <>
+          <FlexBetween gap="0.5rem" pb="1.1rem">
+            <FlexBetween gap="1rem">
+              <UserImage image={picturePath} />
+              <Box>
+                <Typography
+                  variant="h4"
+                  color={dark}
+                  fontWeight="500"
+                  sx={{
+                    "&:hover": {
+                      color: palette.neutral.medium,
+                      cursor: "pointer",
+                    },
+                  }}
+                  onClick={() => navigate(`/profile/${userId}`)}
+                >
+                  {firstName} {lastName}
+                </Typography>
+                <Typography color={medium}>
+                  {friends.length} {friends.length < 2 ? "friend" : "friends"}
+                </Typography>
+              </Box>
+            </FlexBetween>
+            <Box
+              onClick={() => navigate(`/profile/${userId}`)}
               sx={{
                 "&:hover": {
                   color: palette.neutral.medium,
                   cursor: "pointer",
                 },
               }}
-              onClick={() => navigate(`/profile/${userId}`)}
             >
-              {firstName} {lastName}
-            </Typography>
-            <Typography color={medium}>
-              {friends.length} {friends.length < 2 ? "friend" : "friends"}
-            </Typography>
-          </Box>
-        </FlexBetween>
-        <Box
-          onClick={() => navigate(`/profile/${userId}`)}
-          sx={{
-            "&:hover": {
-              color: palette.neutral.medium,
-              cursor: "pointer",
-            },
-          }}
-        >
-          <ManageAccountsOutlined />
-        </Box>
-      </FlexBetween>
-
-      <Divider />
+              <ManageAccountsOutlined />
+            </Box>
+          </FlexBetween>
+          <Divider />
+        </>
+      )}
 
       {/* SECOND ROW */}
       <Box p="1rem 0">
@@ -140,7 +143,7 @@ const UserWidget = ({ userId, picturePath }) => {
           <EditOutlined sx={{ color: main }} />
         </FlexBetween>
 
-        <Typography fontSize="1rem" color={main} fontWeight="500">
+        <Typography fontSize="1rem" color={main} fontWeight="500" m="1rem 0">
           Social Profiles
         </Typography>
         <FlexBetween gap="1rem " mb="0.5rem">
@@ -148,7 +151,7 @@ const UserWidget = ({ userId, picturePath }) => {
             <img src="../assets/linkedin.png" alt="linkedin" />
             <Box>
               <Typography color={main} fontWeight="500">
-                linkedin
+                Linkedin
               </Typography>
               <Typography color={medium}>Network Platform</Typography>
             </Box>

@@ -37,6 +37,7 @@ const postSchema = new mongoose.Schema(
           required: true,
         },
         userPicturePath: String,
+        userCoverPicturePath: String,
         comment: {
           type: String,
           required: true,
