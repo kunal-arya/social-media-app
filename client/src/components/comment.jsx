@@ -73,7 +73,11 @@ const Comment = ({
           width="100%"
         >
           <Link
-            onClick={() => navigate(`/profile/${userId}`)}
+            onClick={() => {
+              navigate(`/profile/${userId}`);
+              // reload the page
+              navigate(0);
+            }}
             color={primaryDark}
             fontWeight="bold"
             underline="hover"
