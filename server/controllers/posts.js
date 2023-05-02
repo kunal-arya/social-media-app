@@ -1,5 +1,8 @@
+import { __dirname } from "../index.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import path from "path";
+import fs from "fs";
 
 /* CREATE */
 export const createPost = async (req, res) => {
@@ -111,6 +114,19 @@ export const deletePost = async (req, res) => {
     if (userId !== post.userId) {
       throw new Error("Access Denied, you can't delete someone's else post");
     }
+
+    const imageFilePath = path.join(
+      __dirname,
+      "public/assets",
+      post.picturePath
+    );
+
+    fs.unlinkSync(imageFilePath, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send({ message: "Failed to delete image." });
+      }
+    });
 
     await Post.deleteOne(post);
 

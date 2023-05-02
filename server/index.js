@@ -24,7 +24,7 @@ import { changeProfilePicture } from "./controllers/users.js";
 const __filename = fileURLToPath(import.meta.url);
 
 // Get the directory name of the current module's file
-const __dirname = path.dirname(__filename);
+export const __dirname = path.dirname(__filename);
 
 // Load environment variables from a .env file
 dotenv.config();
