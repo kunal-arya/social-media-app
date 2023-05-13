@@ -54,7 +54,7 @@ const ProfilePage = () => {
             isProfilePage={true}
           />
           <Box m="2rem 0" />
-          <FriendListWidget userId={userId} />
+          <FriendListWidget userId={userId} isProfile />
         </Box>
         <Box flexBasis={isNonMobileScreen ? "42%" : undefined} m="0">
           <PostsWidget userId={userId} isProfile />

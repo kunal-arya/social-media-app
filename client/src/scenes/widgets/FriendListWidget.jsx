@@ -3,12 +3,14 @@ import Friend from "../../components/Friend";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFriends } from "../../state";
+import { setFriends, setProfileUserFriends } from "../../state";
 import { BASE_URL } from "../../utils/baseUrl";
 
-const FriendListWidget = ({ userId }) => {
+const FriendListWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
-  const { friends } = useSelector((state) => state.user);
+  const { friends } = isProfile
+    ? useSelector((state) => state.profileUser)
+    : useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const { palette } = useTheme();
 
@@ -21,12 +23,20 @@ const FriendListWidget = ({ userId }) => {
     });
 
     const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    if (isProfile) {
+      dispatch(setProfileUserFriends({ friends: data }));
+    } else {
+      dispatch(setFriends({ friends: data }));
+    }
   };
 
   useEffect(() => {
-    getFriends();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // if the friends array is just a bunch of _ids of friends , we call getFriends() to get all the friends
+    // based on the _ids
+    if (typeof friends[0] !== "object") {
+      getFriends();
+    }
+  }, [friends]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <WidgetWrapper sx={{ marginBottom: "1rem" }}>
