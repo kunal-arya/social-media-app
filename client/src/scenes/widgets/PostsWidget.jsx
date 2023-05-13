@@ -8,6 +8,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
+  const isProfilePicChange = useSelector((state) => state.user.picturePath);
 
   const getPosts = async () => {
     const response = await fetch(`${BASE_URL}/posts`, {
@@ -33,7 +34,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     } else {
       getPosts();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isProfilePicChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

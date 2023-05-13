@@ -4,6 +4,7 @@ const initialState = {
   mode: "light",
   user: null,
   token: null,
+  profileUser: null,
   posts: [],
 };
 
@@ -32,6 +33,14 @@ export const authSlice = createSlice({
       }
     },
 
+    setProfileUserFriends: (state, action) => {
+      if (state.profileUser) {
+        state.profileUser.friends = action.payload.friends;
+      } else {
+        console.log(`Profile user Friends non-existent :( `);
+      }
+    },
+
     setPosts: (state, action) => {
       state.posts = action.payload.posts;
     },
@@ -44,9 +53,17 @@ export const authSlice = createSlice({
       state.posts = updatedPosts;
     },
 
+    setProfileUser: (state, action) => {
+      state.profileUser = action.payload;
+    },
+
     setPicturePath: (state, action) => {
       if (state.user._id === action.payload.user._id) {
-        state.user = action.payload.user;
+        state.user.picturePath = action.payload.user.picturePath;
+      }
+
+      if (state.profileUser._id === action.payload.user._id) {
+        state.profileUser.picturePath = action.payload.user.picturePath;
       }
     },
   },
@@ -59,6 +76,8 @@ export const {
   setFriends,
   setPosts,
   setPost,
+  setProfileUser,
+  setProfileUserFriends,
   setPicturePath,
 } = authSlice.actions;
 export default authSlice.reducer;

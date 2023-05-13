@@ -38,11 +38,8 @@ const UploadButton = ({ user, isIconButton = false }) => {
     );
 
     const data = await response.json();
-    dispatch(setPosts({ posts: data.posts }));
+
     dispatch(setPicturePath({ user: data.user }));
-    if (isIconButton) {
-      navigate(0);
-    }
   }
 
   useEffect(() => {

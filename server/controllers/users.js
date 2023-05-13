@@ -127,11 +127,27 @@ export const changeProfilePicture = async (req, res) => {
       })
     );
 
+    await Promise.all(
+      posts.map(async (post) => {
+        post.comments = post.comments.map((comment) => {
+          if (comment.userId === id) {
+            comment.userPicturePath = newPicturePath;
+          }
+          return comment;
+        });
+        await post.save();
+        return post;
+      })
+    );
+
     user.picturePath = newPicturePath;
 
     await user.save();
 
-    res.status(200).json({ user, posts: updatedPosts });
+    res.status(200).json({
+      user: { _id: user._id, picturePath: user.picturePath },
+      posts: updatedPosts,
+    });
   } catch (err) {
     // Handling any errors that occur and sending a JSON response with a 404 status code
     res.status(404).json({ message: err.message });
