@@ -10,18 +10,26 @@ import {
   useTheme,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useMatch, useNavigate } from "react-router-dom";
-import { setFriends, setPosts } from "../state/index";
+import { useNavigate, useParams } from "react-router-dom";
+import { setFriends, setPosts, setProfileUserFriends } from "../state/index";
 import FlexBetween from "./flexBetween";
 import UserImage from "./UserImage";
 import { BASE_URL } from "../utils/baseUrl";
 import { useState } from "react";
 
-const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
+const Friend = ({
+  friendId,
+  name,
+  subtitle,
+  userPicturePath,
+  postId,
+  isFriendListWidget = false,
+}) => {
   const [isDeleteMenuOpen, setDeleteMenuOpen] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { _id, friends } = useSelector((state) => state.user);
+  const isProfile = Boolean(useParams().userId);
   const token = useSelector((state) => state.token);
   const isNonMobileScreen = useMediaQuery("(min-width: 1050px)");
   const { palette } = useTheme();
@@ -44,7 +52,10 @@ const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
       },
     });
     const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    dispatch(setFriends({ friends: data.userFriends }));
+    if (isProfile) {
+      dispatch(setProfileUserFriends({ friends: data.friendFriends }));
+    }
   };
 
   const deletePost = async () => {
@@ -95,26 +106,30 @@ const Friend = ({ friendId, name, subtitle, userPicturePath, postId }) => {
         </Box>
       </FlexBetween>
       {isUserFriendSame ? (
-        <Box>
-          <IconButton onClick={(e) => setDeleteMenuOpen(e.currentTarget)}>
-            {isNonMobileScreen ? (
-              <MoreHorizIcon fontSize="large" />
-            ) : (
-              <MoreHorizIcon fontSize="medium" />
-            )}
-          </IconButton>
-          <Menu
-            id="delete-menu"
-            anchorEl={isDeleteMenuOpen}
-            open={Boolean(isDeleteMenuOpen)}
-            onClose={() => setDeleteMenuOpen(null)}
-            MenuListProps={{
-              "aria-labelledby": "basic-button",
-            }}
-          >
-            <MenuItem onClick={() => deletePost()}>Delete Post</MenuItem>
-          </Menu>
-        </Box>
+        <>
+          {!isFriendListWidget && (
+            <Box>
+              <IconButton onClick={(e) => setDeleteMenuOpen(e.currentTarget)}>
+                {isNonMobileScreen ? (
+                  <MoreHorizIcon fontSize="large" />
+                ) : (
+                  <MoreHorizIcon fontSize="medium" />
+                )}
+              </IconButton>
+              <Menu
+                id="delete-menu"
+                anchorEl={isDeleteMenuOpen}
+                open={Boolean(isDeleteMenuOpen)}
+                onClose={() => setDeleteMenuOpen(null)}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                <MenuItem onClick={() => deletePost()}>Delete Post</MenuItem>
+              </Menu>
+            </Box>
+          )}
+        </>
       ) : (
         <IconButton
           onClick={() => patchFriend()}

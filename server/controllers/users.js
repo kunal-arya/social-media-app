@@ -83,12 +83,27 @@ export const addRemoveFriend = async (req, res) => {
     await friend.save();
 
     // Mapping through the user's 'friends' array and finding each friend by their 'id'
-    const friends = await Promise.all(
+    const userFriends = await Promise.all(
       user.friends.map((id) => User.findById(id))
     );
 
-    // Formatting the retrieved friends' information into a new array
-    const formattedFriends = friends.map(
+    // Formatting the retrieved user's friends' information into a new array
+    const formattedUserFriends = userFriends.map(
+      ({ _id, firstName, lastName, occupation, location, picturePath }) => ({
+        _id,
+        firstName,
+        lastName,
+        occupation,
+        location,
+        picturePath,
+      })
+    );
+
+    const friendFriends = await Promise.all(
+      friend.friends.map((id) => User.findById(id))
+    );
+
+    const formattedFriendFriends = friendFriends.map(
       ({ _id, firstName, lastName, occupation, location, picturePath }) => ({
         _id,
         firstName,
@@ -100,7 +115,10 @@ export const addRemoveFriend = async (req, res) => {
     );
 
     // Sending the formatted friends' information as a JSON response with a 200 status code
-    res.status(200).json(formattedFriends);
+    res.status(200).json({
+      userFriends: formattedUserFriends,
+      friendFriends: formattedFriendFriends,
+    });
   } catch (err) {
     // Handling any errors that occur and sending a JSON response with a 404 status code
     res.status(404).json({ message: err.message });

@@ -33,7 +33,7 @@ const FriendListWidget = ({ userId, isProfile = false }) => {
   useEffect(() => {
     // if the friends array is just a bunch of _ids of friends , we call getFriends() to get all the friends
     // based on the _ids
-    if (typeof friends[0] !== "object") {
+    if (typeof friends[0] !== "object" && friends[0] !== undefined) {
       getFriends();
     }
   }, [friends]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -56,6 +56,7 @@ const FriendListWidget = ({ userId, isProfile = false }) => {
             name={`${friend.firstName} ${friend.lastName}`}
             subtitle={friend.occupation}
             userPicturePath={friend.picturePath}
+            isFriendListWidget
           />
         ))}
       </Box>
