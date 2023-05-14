@@ -29,7 +29,8 @@ const Friend = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { _id, friends } = useSelector((state) => state.user);
-  const isProfile = Boolean(useParams().userId);
+  const currentProfileId = useParams().userId;
+  const isProfile = Boolean(currentProfileId);
   const token = useSelector((state) => state.token);
   const isNonMobileScreen = useMediaQuery("(min-width: 1050px)");
   const { palette } = useTheme();
@@ -53,7 +54,9 @@ const Friend = ({
     });
     const data = await response.json();
     dispatch(setFriends({ friends: data.userFriends }));
-    if (isProfile) {
+    if (isProfile && currentProfileId === _id) {
+      dispatch(setProfileUserFriends({ friends: data.userFriends }));
+    } else if (isProfile && currentProfileId === friendId) {
       dispatch(setProfileUserFriends({ friends: data.friendFriends }));
     }
   };

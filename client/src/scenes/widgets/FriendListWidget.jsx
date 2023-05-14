@@ -31,9 +31,11 @@ const FriendListWidget = ({ userId, isProfile = false }) => {
   };
 
   useEffect(() => {
-    // if the friends array is just a bunch of _ids of friends , we call getFriends() to get all the friends
-    // based on the _ids
-    if (typeof friends[0] !== "object" && friends[0] !== undefined) {
+    /* if the friends array is just a bunch of _ids of friends , we call getFriends() to get all the friends
+    based on the _ids but if a users has no friends , typeof friends[0] !== "object" will be true , so this
+    will create an infinite loop of fetching data ... thats why , we are alse checking is friends array
+    is empty or not */
+    if (typeof friends[0] !== "object" && friends.length !== 0) {
       getFriends();
     }
   }, [friends]); // eslint-disable-line react-hooks/exhaustive-deps

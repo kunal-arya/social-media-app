@@ -51,10 +51,11 @@ export const getUserFriends = async (req, res) => {
 export const addRemoveFriend = async (req, res) => {
   try {
     // Extracting the 'id' and 'friendId' parameters from the request parameters
-    const { id, friendId } = req.params;
+    const friendId = req.params.friendId;
+    const userId = req.params.id;
 
     // Finding the user by the extracted 'id'
-    const user = await User.findById(id);
+    const user = await User.findById(userId);
 
     // Finding the friend by the extracted 'friendId'
     const friend = await User.findById(friendId);
@@ -66,7 +67,7 @@ export const addRemoveFriend = async (req, res) => {
       user.friends = user.friends.filter((id) => id !== friendId);
 
       // Also remove user's id from friend's friends
-      friend.friends = friend.friends.filter((id) => id !== id);
+      friend.friends = friend.friends.filter((id) => id !== userId);
     } else {
       // If friendId is not included in user's friends array
 
@@ -74,7 +75,7 @@ export const addRemoveFriend = async (req, res) => {
       user.friends.push(friendId);
 
       // Also add user's id to friend's friends array
-      friend.friends.push(id);
+      friend.friends.push(userId);
     }
 
     // Saving the updated user object to the database

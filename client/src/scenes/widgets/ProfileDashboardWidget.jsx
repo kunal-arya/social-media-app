@@ -6,12 +6,39 @@ import FlexBetween from "../../components/flexBetween";
 import { useNavigate } from "react-router-dom";
 import { PhotoCamera } from "@mui/icons-material";
 import UploadButton from "../../components/UploadButton";
+import { useDispatch, useSelector } from "react-redux";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { setFriends, setProfileUserFriends } from "../../state";
 
 const ProfileDashboard = ({ user }) => {
   const { palette } = useTheme();
   const backgroundColor = palette.background.alt;
   const dark = palette.neutral.dark;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const loggedInUserID = useSelector((state) => state.user._id);
+  const token = useSelector((state) => state.token);
+  const isLoggedInUser = user._id === loggedInUserID;
+  const isFriend = Boolean(
+    user.friends.find((friend) => friend._id === loggedInUserID)
+  );
+
+  const patchFriend = async () => {
+    const response = await fetch(
+      `${BASE_URL}/users/${loggedInUserID}/${user._id}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    dispatch(setFriends({ friends: data.userFriends }));
+    dispatch(setProfileUserFriends({ friends: data.friendFriends }));
+  };
 
   return (
     <Box
@@ -61,7 +88,7 @@ const ProfileDashboard = ({ user }) => {
             src={`${BASE_URL}/assets/${user.picturePath}`}
           />
         </Box>
-        <UploadButton isIconButton={true} user={user} />
+        {isLoggedInUser && <UploadButton isIconButton={true} user={user} />}
       </Box>
       <Box
         sx={{
@@ -77,18 +104,50 @@ const ProfileDashboard = ({ user }) => {
         <Typography variant="h2" fontWeight="bold" mb="1rem">
           {user.firstName} {user.lastName}
         </Typography>
-        <Button
-          variant="outlined"
-          sx={{ borderColor: `${dark}`, color: `${dark}` }}
-          onClick={() => navigate(`/profile/edit/${user.userId}`)}
-        >
-          <FlexBetween gap="0.25rem">
-            <EditIcon />
-            <Typography sx={{ textTransform: "capitalize" }}>
-              Edit Profile
-            </Typography>
-          </FlexBetween>
-        </Button>
+        {isLoggedInUser ? (
+          <Button
+            variant="outlined"
+            sx={{ borderColor: `${dark}`, color: `${dark}` }}
+            onClick={() => navigate(`/profile/edit/${user.userId}`)}
+          >
+            <FlexBetween gap="0.25rem">
+              <EditIcon />
+              <Typography sx={{ textTransform: "capitalize" }}>
+                Edit Profile
+              </Typography>
+            </FlexBetween>
+          </Button>
+        ) : (
+          <>
+            {!isFriend ? (
+              <Button
+                variant="contained"
+                sx={{ borderColor: `${dark}` }}
+                onClick={() => patchFriend()}
+              >
+                <FlexBetween gap="0.25rem">
+                  <PersonAddIcon />
+                  <Typography sx={{ textTransform: "capitalize" }}>
+                    Add Friend
+                  </Typography>
+                </FlexBetween>
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                sx={{ borderColor: `${dark}`, color: `${dark}` }}
+                onClick={() => patchFriend()}
+              >
+                <FlexBetween gap="0.25rem">
+                  <PersonRemoveIcon />
+                  <Typography sx={{ textTransform: "capitalize" }}>
+                    Remove Friend
+                  </Typography>
+                </FlexBetween>
+              </Button>
+            )}
+          </>
+        )}
       </Box>
     </Box>
   );
