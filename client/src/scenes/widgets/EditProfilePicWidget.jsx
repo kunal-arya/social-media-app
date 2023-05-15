@@ -32,6 +32,7 @@ const EditProfilePicWidget = ({ user }) => {
         />
       </Box>
       <UploadButton user={user} />
+      <UploadButton user={user} isCoverImgBtn />
     </WidgetWrapper>
   );
 };

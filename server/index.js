@@ -14,7 +14,10 @@ import postRoutes from "./routes/posts.js";
 import { register } from "./controllers/auth.js";
 import { createPost } from "./controllers/posts.js";
 import { verifyToken } from "./middleware/auth.js";
-import { changeProfilePicture } from "./controllers/users.js";
+import {
+  changeCoverPicture,
+  changeProfilePicture,
+} from "./controllers/users.js";
 
 //---------------------------------------//
 /********** CONFIGURATIONS ***************/
@@ -102,11 +105,21 @@ app.post(
 );
 
 app.post("/posts", verifyToken, upload.single("picture"), createPost);
+
+// Changing the Profile Picture
 app.post(
   "/users/:id/:newPicturePath/changePicture",
   verifyToken,
   upload.single("picture"),
   changeProfilePicture
+);
+
+// Changing the Cover Image
+app.post(
+  "/users/:id/:coverPicturePath/changeCover",
+  verifyToken,
+  upload.single("picture"),
+  changeCoverPicture
 );
 
 //---------------------------------------//

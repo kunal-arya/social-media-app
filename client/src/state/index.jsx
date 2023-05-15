@@ -62,8 +62,23 @@ export const authSlice = createSlice({
         state.user.picturePath = action.payload.user.picturePath;
       }
 
+      /* if we are using the Icon Button in the profile dashboard to change the profile Picture, we need 
+      to change the picturePath of the profileUser Also */
       if (state.profileUser._id === action.payload.user._id) {
         state.profileUser.picturePath = action.payload.user.picturePath;
+      }
+    },
+
+    setCoverPicturePath: (state, action) => {
+      if (state.user._id === action.payload.user._id) {
+        state.user.coverPicturePath = action.payload.user.coverPicturePath;
+      }
+
+      /* if we are using the Button in the profile dashboard to change the Cover profile Picture, we need 
+      to change the coverPicturePath of the profileUser Also */
+      if (state.profileUser._id === action.payload.user._id) {
+        state.profileUser.coverPicturePath =
+          action.payload.user.coverPicturePath;
       }
     },
   },
@@ -79,5 +94,6 @@ export const {
   setProfileUser,
   setProfileUserFriends,
   setPicturePath,
+  setCoverPicturePath,
 } = authSlice.actions;
 export default authSlice.reducer;

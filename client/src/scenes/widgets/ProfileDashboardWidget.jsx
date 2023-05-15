@@ -57,13 +57,27 @@ const ProfileDashboard = ({ user }) => {
         `,
       }}
     >
-      <Box sx={{ gridArea: "cover" }}>
+      <Box
+        sx={{
+          gridArea: "cover",
+          position: "relative",
+        }}
+      >
         <img
           width="100%"
           height="112%"
-          style={{ objectFit: "cover" }}
-          src={`${BASE_URL}/assets/pexels-thirdman-5981929.jpg`}
+          style={{
+            objectFit: "cover",
+          }}
+          src={
+            user.coverPicturePath
+              ? `${BASE_URL}/assets/${user.coverPicturePath}`
+              : `${BASE_URL}/assets/default-cover-image.jpg`
+          }
         />
+        {isLoggedInUser && (
+          <UploadButton user={user} isCoverImgBtn isCoverProfileBtn />
+        )}
       </Box>
       <Box
         sx={{
@@ -88,7 +102,7 @@ const ProfileDashboard = ({ user }) => {
             src={`${BASE_URL}/assets/${user.picturePath}`}
           />
         </Box>
-        {isLoggedInUser && <UploadButton isIconButton={true} user={user} />}
+        {isLoggedInUser && <UploadButton isIconButton user={user} />}
       </Box>
       <Box
         sx={{

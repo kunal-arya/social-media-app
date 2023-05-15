@@ -172,3 +172,23 @@ export const changeProfilePicture = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+/* UPDATE COVER PICTURE */
+export const changeCoverPicture = async (req, res) => {
+  try {
+    const { id, coverPicturePath } = req.params;
+
+    const user = await User.findById(id);
+
+    user.coverPicturePath = coverPicturePath;
+
+    await user.save();
+
+    res.status(200).json({
+      user: { _id: user._id, coverPicturePath: user.coverPicturePath },
+    });
+  } catch (err) {
+    // Handling any errors that occur and sending a JSON response with a 404 status code
+    res.status(404).json({ message: err.message });
+  }
+};

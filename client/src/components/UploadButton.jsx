@@ -1,31 +1,40 @@
 import { useTheme } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPicturePath, setPosts } from "../state";
+import { setCoverPicturePath, setPicturePath } from "../state";
 import { Button, IconButton } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { BASE_URL } from "../utils/baseUrl";
-import { useNavigate } from "react-router-dom";
 
-const UploadButton = ({ user, isIconButton = false }) => {
+const UploadButton = ({
+  user,
+  isIconButton = false,
+  isCoverImgBtn = false,
+  isCoverProfileBtn = false,
+}) => {
   const { _id } = user;
   const [profilePic, setProfilePic] = useState(null);
+  const [coverPic, setCoverPic] = useState(null);
   const token = useSelector((state) => state.token);
   const dispatch = useDispatch();
   const { palette } = useTheme();
-  const navigate = useNavigate();
   const primaryMain = palette.primary.main;
 
   function handleImageUpload(e) {
     setProfilePic(e.target.files[0]);
   }
 
+  function handleCoverImageUpload(e) {
+    setCoverPic(e.target.files[0]);
+  }
+
   async function changeProfilePic() {
     if (!profilePic) {
       return;
     }
-    const formData = new FormData();
 
+    // making a formData and appending the profilePic in it so that multer can store our image in the backend
+    const formData = new FormData();
     formData.append("picture", profilePic);
 
     const response = await fetch(
@@ -42,9 +51,35 @@ const UploadButton = ({ user, isIconButton = false }) => {
     dispatch(setPicturePath({ user: data.user }));
   }
 
+  async function changeCoverPicture() {
+    if (!coverPic) {
+      return;
+    }
+
+    // creating and storing coverPic in it so that multer can store the image in the backend
+    const formData = new FormData();
+    formData.append("picture", coverPic);
+
+    const response = await fetch(
+      `${BASE_URL}/users/${_id}/${coverPic.name}/changeCover`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+    dispatch(setCoverPicturePath({ user: data.user }));
+  }
+
   useEffect(() => {
     changeProfilePic();
   }, [profilePic]);
+
+  useEffect(() => {
+    changeCoverPicture();
+  }, [coverPic]);
 
   return (
     <>
@@ -67,15 +102,56 @@ const UploadButton = ({ user, isIconButton = false }) => {
           <PhotoCamera />
         </IconButton>
       ) : (
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: { primaryMain }, textTransform: "capitalize" }}
-          component="label"
-          onChange={handleImageUpload}
-        >
-          Upload New Photo
-          <input hidden accept="image/*" type="file" />
-        </Button>
+        <>
+          {isCoverImgBtn ? (
+            <>
+              {isCoverProfileBtn ? (
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: `${palette.neutral.main}`,
+                    textTransform: "capitalize",
+                    position: "absolute",
+                    bottom: 0,
+                    right: "20px",
+                  }}
+                  component="label"
+                  onChange={handleCoverImageUpload}
+                >
+                  Upload Cover Image
+                  <input hidden accept="image/*" type="file" />
+                </Button>
+              ) : (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: `${palette.neutral.main}`,
+                    color: `${palette.neutral.main}`,
+                    textTransform: "capitalize",
+                  }}
+                  component="label"
+                  onChange={handleCoverImageUpload}
+                >
+                  Upload Cover Image
+                  <input hidden accept="image/*" type="file" />
+                </Button>
+              )}
+            </>
+          ) : (
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: { primaryMain },
+                textTransform: "capitalize",
+              }}
+              component="label"
+              onChange={handleImageUpload}
+            >
+              Upload Profile Image
+              <input hidden accept="image/*" type="file" />
+            </Button>
+          )}
+        </>
       )}
     </>
   );
