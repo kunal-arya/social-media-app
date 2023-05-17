@@ -31,8 +31,18 @@ const EditProfilePicWidget = ({ user }) => {
           src={`${BASE_URL}/assets/${picturePath}`}
         />
       </Box>
-      <UploadButton user={user} />
-      <UploadButton user={user} isCoverImgBtn />
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+          padding: "2rem",
+        }}
+      >
+        <UploadButton user={user} />
+        <UploadButton user={user} isCoverImgBtn />
+      </Box>
     </WidgetWrapper>
   );
 };

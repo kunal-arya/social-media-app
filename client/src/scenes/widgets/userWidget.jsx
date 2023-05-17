@@ -4,7 +4,14 @@ import {
   LocationOnOutlined,
   WorkOutlineOutlined,
 } from "@mui/icons-material";
-import { Box, Typography, Divider, useTheme } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Divider,
+  useTheme,
+  Link,
+  Button,
+} from "@mui/material";
 import UserImage from "../../components/UserImage";
 import FlexBetween from "../../components/flexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
@@ -19,6 +26,8 @@ const UserWidget = ({ userId, picturePath, isProfilePage = false }) => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
   const friends = useSelector((state) => state.user.friends);
+  const loggedinUser = useSelector((state) => state.user._id);
+  const isLoggedInUser = user && user._id === loggedinUser;
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
@@ -132,31 +141,90 @@ const UserWidget = ({ userId, picturePath, isProfilePage = false }) => {
         </Typography>
         <FlexBetween gap="1rem " mb="0.5rem">
           <FlexBetween gap="1rem">
-            <img src="../assets/twitter.png" alt="twitter" />
+            {user.twitterProfile ? (
+              <Link
+                underline="none"
+                href={`${user.twitterProfile}`}
+                target="_blank"
+                rel="noopener"
+              >
+                <img src="../assets/twitter.png" alt="twitter" />
+              </Link>
+            ) : (
+              <img src="../assets/twitter.png" alt="twitter" />
+            )}
+
             <Box>
-              <Typography color={main} fontWeight="500">
-                Twitter
-              </Typography>
+              {user.twitterProfile ? (
+                <Link
+                  underline="hover"
+                  href={`${user.twitterProfile}`}
+                  aria-label="twitter Profile link"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <Typography color={main} fontWeight="500">
+                    Twitter
+                  </Typography>
+                </Link>
+              ) : (
+                <Typography color={main} fontWeight="500">
+                  Twitter
+                </Typography>
+              )}
+
               <Typography color={medium}>Social Network</Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
+          {isLoggedInUser && (
+            <Button onClick={() => navigate(`/profile/edit/${userId}`)}>
+              <EditOutlined sx={{ color: main }} />
+            </Button>
+          )}
         </FlexBetween>
 
-        <Typography fontSize="1rem" color={main} fontWeight="500" m="1rem 0">
-          Social Profiles
-        </Typography>
         <FlexBetween gap="1rem " mb="0.5rem">
           <FlexBetween gap="1rem">
-            <img src="../assets/linkedin.png" alt="linkedin" />
+            {user.linkedinProfile ? (
+              <Link
+                underline="none"
+                href={`${user.linkedinProfile}`}
+                target="_blank"
+                rel="noopener"
+              >
+                <img src="../assets/linkedin.png" alt="linkedin" />
+              </Link>
+            ) : (
+              <img src="../assets/linkedin.png" alt="linkedin" />
+            )}
+
             <Box>
-              <Typography color={main} fontWeight="500">
-                Linkedin
-              </Typography>
+              {user.linkedinProfile ? (
+                <Link
+                  underline="hover"
+                  href={`${user.linkedinProfile}`}
+                  aria-label="linkedin Profile link"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <Typography color={main} fontWeight="500">
+                    Linkedin
+                  </Typography>
+                </Link>
+              ) : (
+                <Typography color={main} fontWeight="500">
+                  Linkedin
+                </Typography>
+              )}
+
               <Typography color={medium}>Network Platform</Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
+          {isLoggedInUser && (
+            <Button onClick={() => navigate(`/profile/edit/${userId}`)}>
+              <EditOutlined sx={{ color: main }} />
+            </Button>
+          )}
         </FlexBetween>
       </Box>
     </WidgetWrapper>

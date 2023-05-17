@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import bcrypt from "bcrypt";
 
 /* READ */
 export const getUser = async (req, res) => {
@@ -190,5 +191,49 @@ export const changeCoverPicture = async (req, res) => {
   } catch (err) {
     // Handling any errors that occur and sending a JSON response with a 404 status code
     res.status(404).json({ message: err.message });
+  }
+};
+
+export const editProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      location,
+      occupation,
+      linkedinProfile,
+      twitterProfile,
+    } = req.body;
+
+    let user = await User.findById(id);
+
+    // Generating a salt for password hashing
+    const salt = await bcrypt.genSalt();
+
+    // Hashing the password using the generated salt
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    // Update the user object with the new values
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.password = passwordHash;
+    user.location = location;
+    user.occupation = occupation;
+    user.linkedinProfile = linkedinProfile;
+    user.twitterProfile = twitterProfile;
+
+    // Save the updated user
+    const savedUser = await user.save();
+
+    res.status(200).json({
+      user: savedUser,
+    });
+  } catch (err) {
+    // Handling any errors that occur and sending a JSON response with a 404 status code
+    res.status(404).json({ status: "fail", message: err.message });
   }
 };

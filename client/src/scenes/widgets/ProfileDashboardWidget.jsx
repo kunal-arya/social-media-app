@@ -122,7 +122,7 @@ const ProfileDashboard = ({ user }) => {
           <Button
             variant="outlined"
             sx={{ borderColor: `${dark}`, color: `${dark}` }}
-            onClick={() => navigate(`/profile/edit/${user.userId}`)}
+            onClick={() => navigate(`/profile/edit/${user._id}`)}
           >
             <FlexBetween gap="0.25rem">
               <EditIcon />

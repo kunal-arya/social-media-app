@@ -81,6 +81,12 @@ export const authSlice = createSlice({
           action.payload.user.coverPicturePath;
       }
     },
+
+    setUserInfo: (state, action) => {
+      if (state.user._id === action.payload.user._id) {
+        state.user = action.payload.user;
+      }
+    },
   },
 });
 
@@ -95,5 +101,6 @@ export const {
   setProfileUserFriends,
   setPicturePath,
   setCoverPicturePath,
+  setUserInfo,
 } = authSlice.actions;
 export default authSlice.reducer;
