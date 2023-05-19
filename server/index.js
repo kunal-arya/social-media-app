@@ -18,6 +18,7 @@ import {
   changeCoverPicture,
   changeProfilePicture,
 } from "./controllers/users.js";
+import ChatRoutes from "./routes/chat.js";
 
 //---------------------------------------//
 /********** CONFIGURATIONS ***************/
@@ -129,6 +130,7 @@ app.post(
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
+app.use("/chat", ChatRoutes);
 
 //---------------------------------------//
 /*********** MONGOOSE SETUP **************/
