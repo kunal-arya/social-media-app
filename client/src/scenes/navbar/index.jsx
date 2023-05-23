@@ -91,7 +91,9 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
+          <IconButton onClick={() => navigate("/chat")}>
+            <Message sx={{ fontSize: "25px" }} />
+          </IconButton>
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
@@ -146,6 +148,7 @@ const Navbar = () => {
           <Box display="flex" justifyContent="flex-end" p="1rem">
             <IconButton
               onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
+              sx={{ padding: "1rem" }}
             >
               <Close />
             </IconButton>
@@ -160,7 +163,7 @@ const Navbar = () => {
           >
             <IconButton
               onClick={() => dispatch(setMode())}
-              sx={{ fontSize: "25px" }}
+              sx={{ fontSize: "25px", padding: "1rem" }}
             >
               {theme.palette.mode === "dark" ? (
                 <DarkMode sx={{ fontSize: "25px" }} />
@@ -168,8 +171,13 @@ const Navbar = () => {
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: "25px" }} />
-            <Notifications sx={{ fontSize: "25px" }} />
+            <IconButton
+              onClick={() => navigate("/chat")}
+              sx={{ padding: "1rem" }}
+            >
+              <Message sx={{ fontSize: "25px" }} />
+            </IconButton>
+            <Notifications sx={{ fontSize: "25px", marginBottom: "1rem" }} />
             <Help sx={{ fontSize: "25px" }} />
             <FormControl variant="standard" value={fullName}>
               <Select
