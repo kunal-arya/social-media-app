@@ -57,42 +57,53 @@ const Conversation = ({ data, currentUserId }) => {
     <>
       {isNonMobileScreens ? (
         // Desktop Version
-        <Button
-          sx={{
-            display: "grid",
-            gridTemplateColumns: `1fr 4fr`,
-            gridTemplateAreas: `"pic name" 
-          "pic status"`,
-            gap: "0 1rem",
-          }}
-        >
-          <Box sx={{ gridArea: "pic", position: "relative" }}>
-            <UserImage image={userData?.picturePath} size="50px" />
-            <OnlineIcon />
-          </Box>
 
-          <Typography
+        <>
+          <Button
             sx={{
-              gridArea: "name",
-              color: `${palette.neutral.main}`,
-              textTransform: "capitalize",
+              display: "grid",
+              gridTemplateColumns: `1fr 4fr`,
+              gridTemplateAreas: `"pic name" 
+            "pic status"`,
+              gap: "0 1rem",
             }}
-            variant="h5"
           >
-            {fullName}
-          </Typography>
-          <Typography
+            <Box sx={{ gridArea: "pic", position: "relative" }}>
+              <UserImage image={userData?.picturePath} />
+              <OnlineIcon />
+            </Box>
+
+            <Typography
+              sx={{
+                gridArea: "name",
+                color: `${palette.neutral.main}`,
+                textTransform: "capitalize",
+              }}
+              variant="h5"
+            >
+              {fullName}
+            </Typography>
+            <Typography
+              sx={{
+                gridArea: "status",
+                color: `${palette.neutral.medium}`,
+                fontWeight: "100",
+                textTransform: "capitalize",
+              }}
+              variant="p"
+            >
+              online
+            </Typography>
+          </Button>
+          <Box
             sx={{
-              gridArea: "status",
-              color: `${palette.neutral.medium}`,
-              fontWeight: "100",
-              textTransform: "capitalize",
+              height: "1px",
+              width: "60%",
+              background: `${palette.neutral.light}`,
+              margin: "1rem auto",
             }}
-            variant="p"
-          >
-            online
-          </Typography>
-        </Button>
+          />
+        </>
       ) : (
         // Mobile Version
         <Button
@@ -104,20 +115,11 @@ const Conversation = ({ data, currentUserId }) => {
           }}
         >
           <Box sx={{ position: "relative" }}>
-            <UserImage image={userData?.picturePath} size="50px" />
+            <UserImage image={userData?.picturePath} size="40px" />
             <OnlineIcon />
           </Box>
         </Button>
       )}
-
-      <Box
-        sx={{
-          height: "1px",
-          width: "60%",
-          background: `${palette.neutral.light}`,
-          margin: "1rem auto",
-        }}
-      />
     </>
   );
 };

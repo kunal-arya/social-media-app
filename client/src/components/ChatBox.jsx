@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   IconButton,
+  InputBase,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -11,22 +12,24 @@ import { useSelector } from "react-redux";
 import { BASE_URL } from "../utils/baseUrl";
 import UserImage from "./UserImage";
 import { format } from "timeago.js";
-import InputEmoji from "react-input-emoji";
 import AddIcon from "@mui/icons-material/Add";
 import SendIcon from "@mui/icons-material/Send";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import FlexBetween from "./flexBetween";
+import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 
 const ChatBox = ({ chat, currentUserId }) => {
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState(null);
   const [newMessage, setNewMessage] = useState("");
+  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const { palette } = useTheme();
   const fullName = userData && `${userData.firstName} ${userData.lastName}`;
   const userId = chat?.members?.find((id) => id !== currentUserId);
   const token = useSelector((state) => state.token);
   const isDark = useSelector((state) => state.mode) === "dark";
-  const isNonMobileScreen = useMediaQuery("min-width: 600px");
-
-  console.log(EmojiPicker);
+  const isNonMobileScreen = useMediaQuery("(min-width: 1000px)");
 
   const getUserData = async () => {
     try {
@@ -74,10 +77,6 @@ const ChatBox = ({ chat, currentUserId }) => {
     }
   }, [chat]);
 
-  const handleChange = (message) => {
-    setNewMessage(message);
-  };
-
   return (
     <>
       <Box
@@ -88,9 +87,8 @@ const ChatBox = ({ chat, currentUserId }) => {
           background: `${palette.background.alt}`,
           borderRadius: "1rem",
           padding: "1rem",
-          height: "auto",
-          minHeight: "80vh",
-          overflow: "auto",
+          maxHeight: isNonMobileScreen ? "80vh" : "60vh",
+          height: "100%",
         }}
       >
         {chat ? (
@@ -117,16 +115,16 @@ const ChatBox = ({ chat, currentUserId }) => {
                 height: "2px",
                 width: "100%",
                 background: `${palette.neutral.light}`,
-                margin: "0.5rem auto",
+                margin: isNonMobileScreen ? "0.5rem auto" : "auto",
               }}
             />
 
             {/* ChatBox */}
             <Box
               sx={{
+                maxHeight: isNonMobileScreen ? "60vh" : "40vh",
                 height: "100%",
-                overflow: "auto",
-                maxHeight: "inherit",
+                overflowY: "auto",
                 display: "flex",
                 flexDirection: "column",
                 gap: "1rem",
@@ -145,7 +143,8 @@ const ChatBox = ({ chat, currentUserId }) => {
                         padding: "1rem",
                         position: "relative",
                         alignSelf: "flex-end",
-                        width: "fit-content",
+                        minWidth: "fit-content",
+                        marginRight: "1rem",
                       }}
                     >
                       <Typography sx={{ gridArea: "message" }}>
@@ -206,40 +205,80 @@ const ChatBox = ({ chat, currentUserId }) => {
               sx={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
+                gap: "1rem",
+                position: "relative",
               }}
             >
-              <IconButton
+              <FlexBetween
+                backgroundColor={`${palette.neutral.light}`}
+                borderRadius="9px"
+                gap="3rem"
+                padding="0.1rem 1.5rem"
                 sx={{
-                  backgroundColor: `${palette.primary.main}`,
+                  position: "relative",
+                  flex: "1",
                 }}
               >
-                <AddIcon />
-              </IconButton>
-              <InputEmoji
-                theme={isDark ? "dark" : "light"}
-                value={newMessage}
-                onChange={handleChange}
-                cleanOnEnter
-                borderColor={`${palette.neutral.dark}`}
-              />
-              <Button
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    left: "5px",
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+                <InputBase
+                  fullWidth
+                  sx={{
+                    margin: "0 15px",
+                  }}
+                  placeholder="Message"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                />
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    right: "5px",
+                  }}
+                  onClick={() => {
+                    setEmojiPickerVisible(!isEmojiPickerVisible);
+                    console.log("clicked");
+                  }}
+                >
+                  <InsertEmoticonIcon />
+                </IconButton>
+              </FlexBetween>
+              <IconButton
                 sx={{
                   borderRadius: "10px",
                   backgroundColor: `${palette.primary.main}`,
                 }}
                 variant="contained"
-                endIcon={<SendIcon />}
               >
-                Send
-              </Button>
-              {/* <EmojiPicker /> */}
+                <SendIcon />
+              </IconButton>
+              {isEmojiPickerVisible && (
+                <Box position="absolute" bottom="2.5rem" right="0">
+                  <Picker
+                    data={data}
+                    previewPosition="bottom"
+                    onEmojiSelect={(e) => {
+                      setNewMessage((msg) => msg + e.native);
+                      setEmojiPickerVisible(!isEmojiPickerVisible);
+                    }}
+                    perLine={8}
+                  />
+                </Box>
+              )}
             </Box>
           </>
         ) : (
           <Typography
-            variant="h2"
+            variant="h4"
             sx={{
-              fontSize: "4rem",
+              fontSize: "1.5rem",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
