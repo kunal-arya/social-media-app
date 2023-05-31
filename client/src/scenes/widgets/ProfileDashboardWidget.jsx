@@ -1,6 +1,12 @@
 import { useTheme } from "@emotion/react";
 import EditIcon from "@mui/icons-material/Edit";
-import { Box, Button, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { BASE_URL } from "../../utils/baseUrl";
 import FlexBetween from "../../components/flexBetween";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +15,7 @@ import UploadButton from "../../components/UploadButton";
 import { useDispatch, useSelector } from "react-redux";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import SendIcon from "@mui/icons-material/Send";
 import { setFriends, setProfileUserFriends } from "../../state";
 
 const ProfileDashboard = ({ user }) => {
@@ -19,25 +26,54 @@ const ProfileDashboard = ({ user }) => {
   const dispatch = useDispatch();
   const loggedInUserID = useSelector((state) => state.user._id);
   const token = useSelector((state) => state.token);
+  const isNonMobileScreens = useMediaQuery("(min-width: 600px)");
   const isLoggedInUser = user._id === loggedInUserID;
   const isFriend = Boolean(
     user.friends.find((friend) => friend._id === loggedInUserID)
   );
 
   const patchFriend = async () => {
-    const response = await fetch(
-      `${BASE_URL}/users/${loggedInUserID}/${user._id}`,
-      {
-        method: "PATCH",
+    try {
+      const response = await fetch(
+        `${BASE_URL}/users/${loggedInUserID}/${user._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      dispatch(setFriends({ friends: data.userFriends }));
+      dispatch(setProfileUserFriends({ friends: data.friendFriends }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const messageBtnClickHandler = async () => {
+    try {
+      const chatBody = {
+        senderId: loggedInUserID,
+        receiverId: user._id,
+      };
+
+      const response = await fetch(`${BASE_URL}/chat/create`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data.userFriends }));
-    dispatch(setProfileUserFriends({ friends: data.friendFriends }));
+        body: JSON.stringify(chatBody),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      navigate("/chat");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -147,18 +183,34 @@ const ProfileDashboard = ({ user }) => {
                 </FlexBetween>
               </Button>
             ) : (
-              <Button
-                variant="outlined"
-                sx={{ borderColor: `${dark}`, color: `${dark}` }}
-                onClick={() => patchFriend()}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <FlexBetween gap="0.25rem">
-                  <PersonRemoveIcon />
-                  <Typography sx={{ textTransform: "capitalize" }}>
-                    Remove Friend
-                  </Typography>
-                </FlexBetween>
-              </Button>
+                <Button
+                  variant="outlined"
+                  sx={{ borderColor: `${dark}`, color: `${dark}` }}
+                  onClick={() => patchFriend()}
+                >
+                  <FlexBetween gap="0.25rem">
+                    <PersonRemoveIcon />
+                    <Typography sx={{ textTransform: "capitalize" }}>
+                      Remove Friend
+                    </Typography>
+                  </FlexBetween>
+                </Button>
+                <Button
+                  onClick={messageBtnClickHandler}
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                >
+                  {isNonMobileScreens ? "Send Message" : "Send"}
+                </Button>
+              </Box>
             )}
           </>
         )}

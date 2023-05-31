@@ -5,6 +5,16 @@ export const createChat = async (req, res) => {
     const senderId = req.body.senderId;
     const receiverId = req.body.receiverId;
 
+    const isChatAlreadyCreated = await ChatModel.findOne({
+      members: { $all: [senderId, receiverId] },
+    });
+
+    if (isChatAlreadyCreated) {
+      return res
+        .status(200)
+        .json({ message: "chat already exist between users" });
+    }
+
     const newChat = new ChatModel({
       members: [senderId, receiverId],
     });

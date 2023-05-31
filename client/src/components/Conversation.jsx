@@ -5,14 +5,15 @@ import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import UserImage from "./UserImage";
 import { useTheme } from "@emotion/react";
 
-const OnlineIcon = () => {
+const OnlineIcon = ({ isOnline, offlineColor }) => {
+  console.log(isOnline);
   return (
     <Box
       sx={{
         height: "13px",
         width: "13px",
         position: "absolute",
-        backgroundColor: "#FFBF00",
+        backgroundColor: isOnline ? "#FFBF00" : offlineColor,
         borderRadius: "50%",
         top: "2px",
         right: "2px",
@@ -21,12 +22,13 @@ const OnlineIcon = () => {
   );
 };
 
-const Conversation = ({ data, currentUserId }) => {
+const Conversation = ({ data, currentUserId, onlineUsers }) => {
   // storing the state for the user to which logged in user is chatting
   const [userData, setUserData] = useState(null);
 
-  // userId to which we loggedIn user is chatting
+  // userId to which loggedIn user is chatting
   const userId = data?.members?.find((id) => id !== currentUserId);
+  const isOnline = Boolean(onlineUsers?.find((user) => user.userId === userId));
   const token = useSelector((state) => state.token);
   const fullName = userData && `${userData.firstName} ${userData.lastName}`;
   const { palette } = useTheme();
@@ -70,7 +72,10 @@ const Conversation = ({ data, currentUserId }) => {
           >
             <Box sx={{ gridArea: "pic", position: "relative" }}>
               <UserImage image={userData?.picturePath} />
-              <OnlineIcon />
+              <OnlineIcon
+                isOnline={isOnline}
+                offlineColor={`${palette.neutral.mediumMain}`}
+              />
             </Box>
 
             <Typography
@@ -92,7 +97,7 @@ const Conversation = ({ data, currentUserId }) => {
               }}
               variant="p"
             >
-              online
+              {isOnline ? "online" : "offline"}
             </Typography>
           </Button>
           <Box
@@ -116,7 +121,10 @@ const Conversation = ({ data, currentUserId }) => {
         >
           <Box sx={{ position: "relative" }}>
             <UserImage image={userData?.picturePath} size="40px" />
-            <OnlineIcon />
+            <OnlineIcon
+              isOnline={isOnline}
+              offlineColor={`${palette.neutral.mediumMain}`}
+            />
           </Box>
         </Button>
       )}

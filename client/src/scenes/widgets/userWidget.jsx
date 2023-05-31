@@ -15,15 +15,17 @@ import {
 import UserImage from "../../components/UserImage";
 import FlexBetween from "../../components/flexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../utils/baseUrl";
+import { setFriends, setProfileUserFriends } from "../../state";
 
 const UserWidget = ({ userId, picturePath, isProfilePage = false }) => {
   const [user, setUser] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const friends = useSelector((state) => state.user.friends);
   const loggedinUser = useSelector((state) => state.user._id);
@@ -44,6 +46,25 @@ const UserWidget = ({ userId, picturePath, isProfilePage = false }) => {
   useEffect(() => {
     getUser();
   }, []); // esLint-disable-line react-hooks/exhausted-deps
+
+  const getFriends = async () => {
+    const response = await fetch(`${BASE_URL}/users/${userId}/friends`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    dispatch(setFriends({ friends: data }));
+  };
+
+  useEffect(() => {
+    if (typeof friends[0] !== "object" && friends.length !== 0) {
+      getFriends();
+    }
+  }, [friends]);
 
   if (!user) {
     return null;

@@ -19,7 +19,7 @@ import Picker from "@emoji-mart/react";
 import FlexBetween from "./flexBetween";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 
-const ChatBox = ({ chat, currentUserId }) => {
+const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState(null);
   const [newMessage, setNewMessage] = useState("");
@@ -66,6 +66,39 @@ const ChatBox = ({ chat, currentUserId }) => {
       console.log(err);
     }
   };
+
+  async function sendClickHandler(e) {
+    e.preventDefault();
+
+    const message = {
+      senderId: currentUserId,
+      text: newMessage,
+      chatId: chat._id,
+    };
+
+    // send message to socket server
+    const receiverId = chat.members.find((id) => id !== currentUserId);
+    setSendMessage({ ...message, receiverId });
+
+    // send message to database
+    try {
+      const response = await fetch(`${BASE_URL}/message/add`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+
+      const data = await response.json();
+      setMessages([...messages, data]);
+      setNewMessage("");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   // fetching data for header
   useEffect(() => {
     getUserData();
@@ -76,6 +109,12 @@ const ChatBox = ({ chat, currentUserId }) => {
       fetchMessages();
     }
   }, [chat]);
+
+  useEffect(() => {
+    if (receivedMessage !== null && receivedMessage.chatId === chat._id) {
+      setMessages([...messages, receivedMessage]);
+    }
+  }, [receivedMessage]);
 
   return (
     <>
@@ -256,6 +295,7 @@ const ChatBox = ({ chat, currentUserId }) => {
                   backgroundColor: `${palette.primary.main}`,
                 }}
                 variant="contained"
+                onClick={sendClickHandler}
               >
                 <SendIcon />
               </IconButton>

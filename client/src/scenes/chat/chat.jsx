@@ -1,16 +1,26 @@
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Typography,
+  imageListClasses,
+  useMediaQuery,
+} from "@mui/material";
 import Navbar from "../navbar";
 import { useTheme } from "@emotion/react";
 import FlexBetween from "../../components/flexBetween";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { BASE_URL } from "../../utils/baseUrl";
+import { BASE_URL, SOCKET_BASE_URL } from "../../utils/baseUrl";
 import Conversation from "../../components/Conversation";
 import ChatBox from "../../components/ChatBox";
+import io from "socket.io-client";
 
 const Chat = () => {
+  const socket = useRef();
   const [chats, setChats] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState(null);
+  const [sendMessage, setSendMessage] = useState(null);
+  const [receivedMessage, setReceivedMessage] = useState(null);
   const { palette } = useTheme();
   const loggedInUser = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
@@ -26,18 +36,41 @@ const Chat = () => {
       });
 
       const data = await response.json();
-      console.log(data);
       setChats(data);
     } catch (err) {
       console.log(err);
     }
   };
 
+  // sending message to socket server
+  useEffect(() => {
+    if (sendMessage !== null) {
+      socket.current.emit("send-message", sendMessage);
+    }
+  }, [sendMessage]);
+
   useEffect(() => {
     if (chats === null) {
       getChats();
     }
-  }, [chats]);
+  }, [chats, loggedInUser]);
+
+  useEffect(() => {
+    // Establish a connection to the Socket.IO server using the SOCKET_BASE_URL
+    socket.current = io(`${SOCKET_BASE_URL}`);
+
+    // Emit a "new-user-add" event to the server, passing the logged-in user's ID
+    socket.current.emit("new-user-add", loggedInUser._id);
+    socket.current.on("get-users", (users) => {
+      setOnlineUsers(users);
+    });
+  }, [loggedInUser]);
+
+  useEffect(() => {
+    socket.current.on("receive-message", (data) => {
+      setReceivedMessage(data);
+    });
+  }, []);
 
   return (
     <>
@@ -63,6 +96,7 @@ const Chat = () => {
             minHeight: "20vh",
             position: "relative",
             overflow: "auto",
+            minWidth: "250px",
           }}
         >
           <Typography
@@ -97,8 +131,12 @@ const Chat = () => {
             }}
           >
             {chats?.map((chat) => (
-              <div onClick={() => setCurrentChat(chat)}>
-                <Conversation data={chat} currentUserId={loggedInUser._id} />
+              <div key={chat._id} onClick={() => setCurrentChat(chat)}>
+                <Conversation
+                  onlineUsers={onlineUsers}
+                  data={chat}
+                  currentUserId={loggedInUser._id}
+                />
               </div>
             ))}
           </Box>
@@ -115,7 +153,12 @@ const Chat = () => {
         >
           {/* Chat BOX */}
           {loggedInUser._id && (
-            <ChatBox chat={currentChat} currentUserId={loggedInUser._id} />
+            <ChatBox
+              chat={currentChat}
+              currentUserId={loggedInUser._id}
+              setSendMessage={setSendMessage}
+              receivedMessage={receivedMessage}
+            />
           )}
         </Box>
       </Box>
