@@ -1,9 +1,4 @@
-import {
-  Box,
-  Typography,
-  imageListClasses,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 import Navbar from "../navbar";
 import { useTheme } from "@emotion/react";
 import { useEffect, useRef, useState } from "react";
@@ -40,6 +35,11 @@ const Chat = () => {
       console.log(err);
     }
   };
+
+  function isUserOnline(chat) {
+    const chat_userId = chat?.members?.find((id) => id !== loggedInUser._id);
+    return onlineUsers?.find((user) => user.userId === chat_userId);
+  }
 
   // sending message to socket server
   useEffect(() => {
@@ -129,15 +129,36 @@ const Chat = () => {
               gap: "1rem",
             }}
           >
-            {chats?.map((chat) => (
-              <div key={chat._id} onClick={() => setCurrentChat(chat)}>
-                <Conversation
-                  onlineUsers={onlineUsers}
-                  data={chat}
-                  currentUserId={loggedInUser._id}
-                />
-              </div>
-            ))}
+            {/* Showing Online Users First */}
+            <>
+              {chats?.map(
+                (chat) =>
+                  isUserOnline(chat) && (
+                    <div key={chat._id} onClick={() => setCurrentChat(chat)}>
+                      <Conversation
+                        onlineUsers={onlineUsers}
+                        data={chat}
+                        currentUserId={loggedInUser._id}
+                      />
+                    </div>
+                  )
+              )}
+            </>
+            {/* Showing Offline Users */}
+            <>
+              {chats?.map(
+                (chat) =>
+                  !isUserOnline(chat) && (
+                    <div key={chat._id} onClick={() => setCurrentChat(chat)}>
+                      <Conversation
+                        onlineUsers={onlineUsers}
+                        data={chat}
+                        currentUserId={loggedInUser._id}
+                      />
+                    </div>
+                  )
+              )}
+            </>
           </Box>
         </Box>
 
