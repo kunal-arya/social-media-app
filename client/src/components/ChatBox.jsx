@@ -7,7 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { BASE_URL } from "../utils/baseUrl";
 import UserImage from "./UserImage";
@@ -22,6 +22,7 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
   const [userData, setUserData] = useState(null);
   const [messages, setMessages] = useState(null);
+  const messagesContainerRef = useRef(null);
   const [newMessage, setNewMessage] = useState("");
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
   const { palette } = useTheme();
@@ -99,6 +100,13 @@ const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
     }
   }
 
+  function scollToBottom() {
+    if (messagesContainerRef.current && messages.length > 0) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }
+
   // fetching data for header
   useEffect(() => {
     getUserData();
@@ -115,6 +123,10 @@ const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
       setMessages([...messages, receivedMessage]);
     }
   }, [receivedMessage]);
+
+  useEffect(() => {
+    scollToBottom();
+  }, [messages]);
 
   return (
     <>
@@ -168,11 +180,13 @@ const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
                 flexDirection: "column",
                 gap: "1rem",
               }}
+              ref={messagesContainerRef}
             >
-              {messages?.map((message) => (
+              {messages?.map((message, index) => (
                 <>
                   {message.senderId === currentUserId ? (
                     <Box
+                      key={`${message} ${index}`}
                       sx={{
                         height: "content",
                         width: "30%",
@@ -205,6 +219,7 @@ const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
                     </Box>
                   ) : (
                     <Box
+                      key={`${message} ${index}`}
                       sx={{
                         height: "content",
                         width: "30%",
