@@ -47,12 +47,13 @@ const ProfileDashboard = ({ user }) => {
       const data = await response.json();
       dispatch(setFriends({ friends: data.userFriends }));
       dispatch(setProfileUserFriends({ friends: data.friendFriends }));
+      messageBtnClickHandler({ type: "add Friend" });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const messageBtnClickHandler = async () => {
+  const messageBtnClickHandler = async (e) => {
     try {
       const chatBody = {
         senderId: loggedInUserID,
@@ -70,7 +71,9 @@ const ProfileDashboard = ({ user }) => {
 
       const data = await response.json();
       console.log(data);
-      navigate("/chat");
+      if (e.type === "click") {
+        navigate("/chat");
+      }
     } catch (err) {
       console.log(err);
     }

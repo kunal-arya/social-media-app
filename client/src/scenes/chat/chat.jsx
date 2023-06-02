@@ -6,7 +6,6 @@ import {
 } from "@mui/material";
 import Navbar from "../navbar";
 import { useTheme } from "@emotion/react";
-import FlexBetween from "../../components/flexBetween";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { BASE_URL, SOCKET_BASE_URL } from "../../utils/baseUrl";

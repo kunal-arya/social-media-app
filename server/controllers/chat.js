@@ -5,6 +5,14 @@ export const createChat = async (req, res) => {
     const senderId = req.body.senderId;
     const receiverId = req.body.receiverId;
 
+    if (senderId === null || !receiverId === null) {
+      res.status(404).json({ error: "senderId or ReceiverId is null" });
+    }
+
+    if (senderId === receiverId) {
+      res.status(404).json({ error: "senderId and receiverId is Same" });
+    }
+
     const isChatAlreadyCreated = await ChatModel.findOne({
       members: { $all: [senderId, receiverId] },
     });

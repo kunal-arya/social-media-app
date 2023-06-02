@@ -44,6 +44,29 @@ const Friend = ({
   // when we post something , we don't want to show add friend to our own post
   const isUserFriendSame = _id === friendId;
 
+  const createChat = async () => {
+    try {
+      const chatBody = {
+        senderId: _id,
+        receiverId: friendId,
+      };
+
+      const response = await fetch(`${BASE_URL}/chat/create`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(chatBody),
+      });
+
+      const data = await response.json();
+      console.log(data); // response from the server
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const patchFriend = async () => {
     const response = await fetch(`${BASE_URL}/users/${_id}/${friendId}`, {
       method: "PATCH",
@@ -59,6 +82,7 @@ const Friend = ({
     } else if (isProfile && currentProfileId === friendId) {
       dispatch(setProfileUserFriends({ friends: data.friendFriends }));
     }
+    createChat();
   };
 
   const deletePost = async () => {

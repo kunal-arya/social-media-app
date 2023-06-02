@@ -18,6 +18,7 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import FlexBetween from "./flexBetween";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
+import { useNavigate } from "react-router-dom";
 
 const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
   const [userData, setUserData] = useState(null);
@@ -25,11 +26,11 @@ const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
   const messagesContainerRef = useRef(null);
   const [newMessage, setNewMessage] = useState("");
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
+  const navigate = useNavigate();
   const { palette } = useTheme();
   const fullName = userData && `${userData.firstName} ${userData.lastName}`;
   const userId = chat?.members?.find((id) => id !== currentUserId);
   const token = useSelector((state) => state.token);
-  const isDark = useSelector((state) => state.mode) === "dark";
   const isNonMobileScreen = useMediaQuery("(min-width: 1000px)");
 
   const getUserData = async () => {
@@ -150,6 +151,7 @@ const ChatBox = ({ chat, currentUserId, setSendMessage, receivedMessage }) => {
                 alignItems: "center",
                 justifyContent: "space-between",
               }}
+              onClick={() => navigate(`/profile/${userId}`)}
             >
               <UserImage image={userData?.picturePath} size="50px" />
               <Typography

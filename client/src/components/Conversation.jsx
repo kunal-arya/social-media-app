@@ -6,7 +6,6 @@ import UserImage from "./UserImage";
 import { useTheme } from "@emotion/react";
 
 const OnlineIcon = ({ isOnline, offlineColor }) => {
-  console.log(isOnline);
   return (
     <Box
       sx={{
