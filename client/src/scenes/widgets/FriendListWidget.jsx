@@ -51,16 +51,18 @@ const FriendListWidget = ({ userId, isProfile = false }) => {
         Friend List
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
-        {friends.map((friend) => (
-          <Friend
-            key={friend._id}
-            friendId={friend._id}
-            name={`${friend.firstName} ${friend.lastName}`}
-            subtitle={friend.occupation}
-            userPicturePath={friend.picturePath}
-            isFriendListWidget
-          />
-        ))}
+        {friends &&
+          typeof friends[0] == "object" &&
+          friends.map((friend) => (
+            <Friend
+              key={friend._id}
+              friendId={friend._id}
+              name={`${friend.firstName} ${friend.lastName}`}
+              subtitle={friend.occupation}
+              userPicturePath={friend.picturePath && friend.picturePath}
+              isFriendListWidget
+            />
+          ))}
       </Box>
     </WidgetWrapper>
   );
