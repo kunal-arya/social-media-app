@@ -115,22 +115,6 @@ export const deletePost = async (req, res) => {
       throw new Error("Access Denied, you can't delete someone's else post");
     }
 
-    // if user has created a post with image, only then we will delete the image
-    if (post.picturePath) {
-      const imageFilePath = path.join(
-        __dirname,
-        "public/assets",
-        post.picturePath
-      );
-
-      fs.unlinkSync(imageFilePath, (err) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).send({ message: "Failed to delete image." });
-        }
-      });
-    }
-
     await Post.deleteOne(post);
 
     const posts = await Post.find().sort({ createdAt: -1 });

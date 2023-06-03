@@ -20,6 +20,7 @@ import {
 } from "./controllers/users.js";
 import ChatRoutes from "./routes/chat.js";
 import MessageRoutes from "./routes/message.js";
+import { Octokit } from "@octokit/rest";
 
 //---------------------------------------//
 /********** CONFIGURATIONS ***************/
@@ -74,24 +75,52 @@ app.use(cors());
 // Serve static assets from the "public/assets" directory
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
+// Create a Octokit instance and authenticate with your github Token
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
 //---------------------------------------//
 /*********** FILE STORAGE *************/
 //---------------------------------------//
 
-const storage = multer.diskStorage({
-  // Define the destination folder where the uploaded files will be saved
-  destination: function (req, file, cb) {
-    cb(null, "public/assets"); // Call the callback function with null for error (no error) and the destination folder path
-  },
-  // Define how the uploaded files should be named
-  filename: function (req, file, cb) {
-    cb(null, file.originalname); // Call the callback function with null for error (no error) and the original filename
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage, // Set the "storage" configuration object defined earlier as the storage option for Multer
 });
+
+// This function uploads a picture file to GitHub repository
+const githubPictureUpload = async (req, res, next) => {
+  try {
+    // Read the content of the uploaded file
+    const fileContent = req.file.buffer;
+
+    // Specify the details of the new file in your GitHub repository
+    const repoOwner = "kunal-arya";
+    const repoName = "social-media-app";
+    const targetFolder = "server/public/assets";
+    const fileName = req.file.originalname;
+
+    // Create or update the file in your GitHub repository
+    const response = await octokit.repos.createOrUpdateFileContents({
+      owner: repoOwner,
+      repo: repoName,
+      path: `${targetFolder}/${fileName}`,
+      message: "Add New Picture",
+      content: fileContent.toString("base64"),
+    });
+
+    console.log("File saved to GitHub:", response.data.content.html_url);
+
+    // Send a successful response
+    next();
+  } catch (err) {
+    // Handle errors during file upload
+    console.error("Error uploading file:", err);
+    res
+      .status(500)
+      .json({ error: err.message, msg: "Error uploading file to GitHub" });
+  }
+};
 
 //---------------------------------------//
 /*********** ROUTES WITH FILES ***********/
@@ -102,17 +131,25 @@ app.post(
   "/auth/register",
   // Middleware for handling file uploads, expecting a single file with field name "picture"
   upload.single("picture"),
+  githubPictureUpload,
   // Callback function for handling user registration logic
   register
 );
 
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.post(
+  "/posts",
+  verifyToken,
+  upload.single("picture"),
+  githubPictureUpload,
+  createPost
+);
 
 // Changing the Profile Picture
 app.post(
   "/users/:id/:newPicturePath/changePicture",
   verifyToken,
   upload.single("picture"),
+  githubPictureUpload,
   changeProfilePicture
 );
 
@@ -121,6 +158,7 @@ app.post(
   "/users/:id/:coverPicturePath/changeCover",
   verifyToken,
   upload.single("picture"),
+  githubPictureUpload,
   changeCoverPicture
 );
 
