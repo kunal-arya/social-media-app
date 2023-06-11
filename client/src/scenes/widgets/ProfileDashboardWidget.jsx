@@ -1,16 +1,9 @@
 import { useTheme } from "@emotion/react";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  Button,
-  IconButton,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import { BASE_URL } from "../../utils/baseUrl";
 import FlexBetween from "../../components/flexBetween";
 import { useNavigate } from "react-router-dom";
-import { PhotoCamera } from "@mui/icons-material";
 import UploadButton from "../../components/UploadButton";
 import { useDispatch, useSelector } from "react-redux";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";

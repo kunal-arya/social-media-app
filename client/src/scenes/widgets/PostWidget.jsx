@@ -8,12 +8,13 @@ import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "../../components/flexBetween";
 import Friend from "../../components/Friend";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "../../state/index";
 import { BASE_URL } from "../../utils/baseUrl";
 import PostComment from "../../components/postComment";
 import Comment from "../../components/comment";
+import Skeleton from "@mui/material/Skeleton";
 
 const PostWidget = ({
   postId,
@@ -26,10 +27,13 @@ const PostWidget = ({
   likes,
   comments,
 }) => {
-  const [isComments, setIsComments] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [isComments, setComments] = useState(false);
+  const [loadingSec, setLoadingSec] = useState(0);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+  const posts = useSelector((state) => state.posts);
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
   const { palette } = useTheme();
@@ -49,6 +53,40 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
   };
 
+  async function isImageAvailable(url) {
+    try {
+      const response = await fetch(url, {
+        method: "get",
+      });
+
+      if (response.status == 200) {
+        if (isLoading) {
+          setLoading(false);
+        }
+      }
+
+      return response.status;
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.log("URL returns 404 Not Found");
+      } else {
+        console.error("Error occurred while checking URL:", error.message);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (isLoading) {
+      const responseStatus = isImageAvailable(
+        `${BASE_URL}/assets/${picturePath}`
+      );
+
+      if (responseStatus !== 200) {
+        setLoadingSec((prevSec) => prevSec + 1);
+      }
+    }
+  }, [posts, loadingSec]);
+
   return (
     <WidgetWrapper mb="2rem">
       <Friend
@@ -61,7 +99,18 @@ const PostWidget = ({
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
       </Typography>
-      {picturePath && (
+
+      {isLoading ? (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Skeleton variant="rectangular" width={500} height={400} />
+        </Box>
+      ) : (
         <img
           width="100%"
           height="auto"
@@ -84,7 +133,7 @@ const PostWidget = ({
           </FlexBetween>
 
           <FlexBetween gap="0.3rem">
-            <IconButton onClick={() => setIsComments(!isComments)}>
+            <IconButton onClick={() => setComments(!isComments)}>
               <ChatBubbleOutlineOutlined />
             </IconButton>
             <Typography>{comments.length}</Typography>
