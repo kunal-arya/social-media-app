@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCoverPicturePath, setPicturePath } from "../state";
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, useMediaQuery } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { BASE_URL } from "../utils/baseUrl";
 
@@ -19,6 +19,7 @@ const UploadButton = ({
   const dispatch = useDispatch();
   const { palette } = useTheme();
   const primaryMain = palette.primary.main;
+  const isNonMobileScreens = useMediaQuery("(min-width: 600px)");
 
   function handleImageUpload(e) {
     setProfilePic(e.target.files[0]);
@@ -90,8 +91,8 @@ const UploadButton = ({
           component="label"
           sx={{
             position: "absolute",
-            right: "5px",
-            bottom: "40px",
+            right: "0px",
+            bottom: isNonMobileScreens ? "40px" : "10px",
             backgroundColor: `${palette.primary.light}`,
             color: `${palette.primary.dark}`,
             boxShadow: "0px 0px 10px rgba(0,0,0,0.4)",
@@ -112,7 +113,8 @@ const UploadButton = ({
                     backgroundColor: `${palette.neutral.main}`,
                     textTransform: "capitalize",
                     position: "absolute",
-                    bottom: 0,
+                    top: isNonMobileScreens ? "none" : "10px",
+                    bottom: isNonMobileScreens ? "0" : "none",
                     right: "20px",
                   }}
                   component="label"

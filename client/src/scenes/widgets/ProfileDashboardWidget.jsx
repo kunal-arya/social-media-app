@@ -75,17 +75,23 @@ const ProfileDashboard = ({ user }) => {
   return (
     <Box
       maxWidth="60rem"
-      height="30rem"
+      height={isNonMobileScreens ? "30rem" : "35rem"}
       margin="auto"
       backgroundColor={backgroundColor}
       borderRadius={"0 0 10px 10px"}
       sx={{
         display: "grid",
-        gridTemplateColumns: "170px 1fr",
-        gridTemplateRows: "60% 40%",
-        gridTemplateAreas: `
+        gridTemplateColumns: isNonMobileScreens ? "170px 1fr" : "1fr",
+        gridTemplateRows: isNonMobileScreens ? "60% 40%" : "50% 25% 25%",
+        gridTemplateAreas: isNonMobileScreens
+          ? `
         "cover cover"
         "picture info"
+        `
+          : `
+        "cover"
+        "picture"
+        "info" 
         `,
       }}
     >
@@ -118,6 +124,9 @@ const ProfileDashboard = ({ user }) => {
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
+          width: isNonMobileScreens ? "none" : "150px",
+          height: isNonMobileScreens ? "none" : "150px",
+          justifySelf: "center",
         }}
       >
         <Box width="150px" height="150px">
@@ -141,13 +150,13 @@ const ProfileDashboard = ({ user }) => {
           gridArea: "info",
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-start",
+          alignItems: isNonMobileScreens ? "flex-start" : "center",
           flexDirection: "column",
-          paddingLeft: "1rem",
-          paddingTop: "2rem",
+          paddingLeft: isNonMobileScreens ? "1rem" : "0",
+          paddingTop: isNonMobileScreens ? "2rem" : "0",
         }}
       >
-        <Typography variant="h2" fontWeight="bold" mb="1rem">
+        <Typography fontSize="2rem" variant="h2" fontWeight="bold" mb="1rem">
           {user.firstName} {user.lastName}
         </Typography>
         {isLoggedInUser ? (
