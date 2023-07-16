@@ -3,7 +3,7 @@ import Navbar from "../navbar";
 import { useTheme } from "@emotion/react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { BASE_URL, SOCKET_BASE_URL } from "../../utils/baseUrl";
+import { BASE_URL } from "../../utils/baseUrl";
 import Conversation from "../../components/Conversation";
 import ChatBox from "../../components/ChatBox";
 import io from "socket.io-client";
@@ -56,7 +56,7 @@ const Chat = () => {
 
   useEffect(() => {
     // Establish a connection to the Socket.IO server using the SOCKET_BASE_URL
-    socket.current = io(SOCKET_BASE_URL);
+    socket.current = io(BASE_URL);
 
     // Emit a "new-user-add" event to the server, passing the logged-in user's ID
     socket.current.emit("new-user-add", loggedInUser._id);
