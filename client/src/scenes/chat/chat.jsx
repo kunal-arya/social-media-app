@@ -56,7 +56,7 @@ const Chat = () => {
 
   useEffect(() => {
     // Establish a connection to the Socket.IO server using the SOCKET_BASE_URL
-    socket.current = io(`${SOCKET_BASE_URL}`);
+    socket.current = io(SOCKET_BASE_URL);
 
     // Emit a "new-user-add" event to the server, passing the logged-in user's ID
     socket.current.emit("new-user-add", loggedInUser._id);

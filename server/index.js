@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import { Server } from "socket.io";
+import http from "http";
 import multer from "multer";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -77,6 +79,55 @@ app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 // Create a Octokit instance and authenticate with your github Token
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+//---------------------------------------//
+/********** SOCKET.IO SETUP **************/
+//---------------------------------------//
+let activeUsers = [];
+
+io.on("connection", (socket) => {
+  // add new user
+  socket.on("new-user-add", (newUserId) => {
+    // if user is not added previously
+    const isActiveUser = activeUsers.some((user) => user.userId === newUserId);
+
+    if (!isActiveUser) {
+      activeUsers.push({
+        userId: newUserId,
+        socketId: socket.id,
+      });
+    }
+
+    console.log("Connected Users", activeUsers);
+    // sending the activeUsers to the client side
+    io.emit("get-users", activeUsers);
+  });
+
+  // send message
+  socket.on("send-message", (data) => {
+    const { receiverId } = data;
+    const user = activeUsers.find((user) => user.userId === receiverId);
+    console.log("sending from socket to: ", receiverId);
+    console.log("data", data);
+    if (user) {
+      io.to(user.socketId).emit("receive-message", data);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
+    console.log("user Disconnected", activeUsers);
+    io.emit("get-users", activeUsers);
+  });
+});
 
 //---------------------------------------//
 /*********** FILE STORAGE *************/
@@ -185,7 +236,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(PORT, () =>
+    server.listen(PORT, () =>
       console.log(`Database Connected & Server Port: ${PORT}`)
     );
   })
