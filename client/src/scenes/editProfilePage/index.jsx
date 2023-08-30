@@ -21,7 +21,7 @@ const EditProfilePage = () => {
         justifyContent="center"
       >
         <EditProfilePicWidget user={user} />
-        <EditProfileWidget user={user} />
+        {/* <EditProfileWidget user={user} /> */}
       </Box>
     </>
   );
